@@ -5,3 +5,17 @@ out
 .eslintcache
 *.log*
 build
+
+## IDE files & agents AI
+.vscode/
+.idea/
+*.idea.*
+*.idea
+*.sublime-workspace
+*.sublime-project
+*.code-workspace
+*.swp
+*.swo
+
+workspace.xml
+
