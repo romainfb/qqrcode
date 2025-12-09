@@ -1,10 +1,11 @@
-import { useState } from 'react'
-import type { QRSettings, CornersStyle } from './types'
+import {useState, useEffect, useRef, JSX} from 'react'
+import type { QRSettings, CornersStyle, QRCodeData } from './types'
 import InputArea from '@renderer/components/InputArea'
 import Canvas from '@renderer/components/Canvas'
 import ControlPanel from '@renderer/components/ControlPanel'
+import HistoryPanel from '@renderer/components/HistoryPanel'
 
-function App(): React.JSX.Element {
+function App(): JSX.Element {
   const [input, setInput] = useState<string>('')
   const [data, setData] = useState<string>('QQRCode')
   const [settings, setSettings] = useState<QRSettings>({
@@ -15,11 +16,59 @@ function App(): React.JSX.Element {
     cornersStyle: 'rounded',
     centerImage: undefined
   })
+  const [history, setHistory] = useState<QRCodeData[]>([])
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [pendingSave, setPendingSave] = useState<{ data: string; settings: QRSettings } | null>(null)
+  const getDataUrlRef = useRef<(() => Promise<string>) | null>(null)
+
+  useEffect(() => {
+    window.api.history.get().then(setHistory)
+  }, [])
+
+  useEffect(() => {
+    if (!pendingSave || !getDataUrlRef.current) return
+
+    const saveToHistory = async () => {
+      try {
+        const dataUrl = await getDataUrlRef.current?.()
+        if (dataUrl) {
+          const newItem: QRCodeData = {
+            id: crypto.randomUUID(),
+            data: pendingSave.data,
+            dataUrl,
+            settings: { ...pendingSave.settings },
+            createdAt: Date.now()
+          }
+          const newHistory = await window.api.history.add(newItem)
+          setHistory(newHistory)
+          setSelectedId(newItem.id)
+        }
+      } catch (error) {
+        console.error('Failed to save QR code to history:', error)
+      } finally {
+        setPendingSave(null)
+      }
+    }
+
+    saveToHistory()
+  }, [pendingSave])
 
   const onGenerate = () => {
     const trimmed = input.trim()
     if (!trimmed) return
     setData(trimmed)
+    setPendingSave({ data: trimmed, settings })
+  }
+
+  const onQRReady = (getDataUrl: () => Promise<string>) => {
+    getDataUrlRef.current = getDataUrl
+  }
+
+  const onSelectHistory = (item: QRCodeData) => {
+    setData(item.data)
+    setSettings(item.settings)
+    setInput(item.data)
+    setSelectedId(item.id)
   }
 
   const onCornersStyleChange = (v: CornersStyle) => setSettings((s) => ({ ...s, cornersStyle: v }))
@@ -40,8 +89,9 @@ function App(): React.JSX.Element {
         disabled={generateDisabled}
       />
       <div className="flex w-full h-full flex-1">
+        <HistoryPanel history={history} onSelect={onSelectHistory} selectedId={selectedId} />
         <div className="flex-1">
-          <Canvas data={data} settings={settings} />
+          <Canvas data={data} settings={settings} onQRReady={onQRReady} />
         </div>
         <ControlPanel
           cornersStyle={settings.cornersStyle}
@@ -63,3 +113,4 @@ function App(): React.JSX.Element {
 }
 
 export default App
+
