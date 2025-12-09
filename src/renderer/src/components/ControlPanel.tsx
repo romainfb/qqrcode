@@ -1,4 +1,5 @@
 import type { ControlPanelProps } from '@renderer/types'
+import {ChangeEvent, JSX} from "react";
 
 function ControlPanel({
   cornersStyle,
@@ -10,8 +11,25 @@ function ControlPanel({
   foregroundColor,
   onForegroundColorChange,
   backgroundColor,
-  onBackgroundColorChange
-}: ControlPanelProps): React.JSX.Element {
+  onBackgroundColorChange,
+  centerImage,
+  onCenterImageChange
+}: ControlPanelProps): JSX.Element {
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = () => {
+        onCenterImageChange(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleRemoveImage = () => {
+    onCenterImageChange(undefined)
+  }
+
   return (
     <section className={'w-80 h-full bg-zinc-900 border-l border-zinc-800 p-4 flex flex-col gap-6'}>
       <div>
@@ -66,6 +84,42 @@ function ControlPanel({
             <option value="dots">Points</option>
           </select>
         </div>
+      </div>
+
+      <div>
+        <label
+          htmlFor="centerImage"
+          className="block text-xs uppercase tracking-wide text-zinc-400 mb-2"
+        >
+          Image centrale
+        </label>
+        {centerImage ? (
+          <div className="flex flex-col gap-2">
+            <div className="w-full h-24 bg-zinc-800 border border-zinc-700 rounded-xl flex items-center justify-center overflow-hidden">
+              <img src={centerImage} alt="Centre" className="max-h-full max-w-full object-contain" />
+            </div>
+            <button
+              onClick={handleRemoveImage}
+              className="w-full bg-zinc-800 text-zinc-100 border border-zinc-700 rounded-xl px-3 py-2 text-sm hover:bg-zinc-700 transition-colors"
+            >
+              Supprimer l'image
+            </button>
+          </div>
+        ) : (
+          <label
+            htmlFor="centerImage"
+            className="w-full h-10 bg-zinc-800 text-zinc-100 border border-zinc-700 rounded-xl px-3 py-2 text-sm flex items-center justify-center cursor-pointer hover:bg-zinc-700 transition-colors"
+          >
+            Choisir une image
+            <input
+              id="centerImage"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+            />
+          </label>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
