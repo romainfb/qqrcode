@@ -1,5 +1,16 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, nativeImage } from 'electron'
 import { join } from 'path'
+
+const iconPath = join(__dirname, '../../resources/icon.png')
+const iconImage = nativeImage.createFromPath(iconPath)
+
+if (process.platform === 'darwin' && !iconImage.isEmpty()) {
+  app.whenReady().then(() => {
+    if (app.dock) {
+      app.dock.setIcon(iconImage)
+    }
+  })
+}
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -14,7 +25,8 @@ function createWindow(): void {
       nodeIntegration: false,
       allowRunningInsecureContent: false,
       experimentalFeatures: false
-    }
+    },
+    icon: process.platform === 'darwin' ? undefined : iconImage
   })
 
   mainWindow.on('ready-to-show', () => {
