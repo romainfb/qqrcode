@@ -1,161 +1,65 @@
-import type { ControlPanelProps } from '@renderer/types'
-import { ChangeEvent, JSX } from 'react'
+import type { QRSettings, CornersStyle, DotStyle, ECC } from '@renderer/types'
+import { CORNERS_STYLES, CORNERS_STYLE_LABELS, DOT_STYLES, DOT_STYLE_LABELS, ECC_LEVELS } from '@renderer/types'
 import CanvasExport from '@renderer/components/CanvasExport'
+import SelectField from '@renderer/components/SelectField'
+import ColorPicker from '@renderer/components/ColorPicker'
+import ImageUploader from '@renderer/components/ImageUploader'
 
-function ControlPanel({
-  cornersStyle,
-  onCornersStyleChange,
-  dotStyle,
-  onDotStyleChange,
-  ecc,
-  onEccChange,
-  foregroundColor,
-  onForegroundColorChange,
-  backgroundColor,
-  onBackgroundColorChange,
-  centerImage,
-  onCenterImageChange
-}: ControlPanelProps): JSX.Element {
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = () => {
-        onCenterImageChange(reader.result as string)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
+// Labels pour ECC (identiques aux valeurs)
+const ECC_LABELS: Record<ECC, string> = { L: 'L', M: 'M', Q: 'Q', H: 'H' }
 
-  const handleRemoveImage = (): void => {
-    onCenterImageChange(undefined)
-  }
+interface ControlPanelProps {
+  settings: QRSettings
+  onSettingChange: <K extends keyof QRSettings>(key: K, value: QRSettings[K]) => void
+}
 
+export default function ControlPanel({ settings, onSettingChange }: ControlPanelProps) {
   return (
-    <section className={'w-80 h-full bg-black border-l border-zinc-800 p-4 flex flex-col gap-6'}>
-      <div>
-        <label
-          htmlFor="cornersStyle"
-          className="block text-xs uppercase tracking-wide text-zinc-400 mb-2"
-        >
-          Coins
-        </label>
-        <select
-          id="cornersStyle"
-          value={cornersStyle}
-          onChange={(e) => onCornersStyleChange(e.target.value as 'square' | 'rounded')}
-          className="w-full bg-zinc-800 text-zinc-100 border border-zinc-700 rounded-xl px-3 py-2 text-sm"
-        >
-          <option value="square">Carré</option>
-          <option value="rounded">Arrondi</option>
-        </select>
-      </div>
+    <section className="w-80 h-full bg-black border-l border-zinc-800 p-4 flex flex-col gap-6">
+      <SelectField<CornersStyle>
+        label="Coins"
+        value={settings.cornersStyle}
+        options={CORNERS_STYLES}
+        labels={CORNERS_STYLE_LABELS}
+        onChange={(v) => onSettingChange('cornersStyle', v)}
+      />
 
       <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="ecc" className="block text-xs uppercase tracking-wide text-zinc-400 mb-2">
-            ECC
-          </label>
-          <select
-            id="ecc"
-            value={ecc}
-            onChange={(e) => onEccChange(e.target.value as 'L' | 'M' | 'Q' | 'H')}
-            className="w-full bg-zinc-800 text-zinc-100 border border-zinc-700 rounded-xl px-3 py-2 text-sm"
-          >
-            <option value="L">L</option>
-            <option value="M">M</option>
-            <option value="Q">Q</option>
-            <option value="H">H</option>
-          </select>
-        </div>
-        <div>
-          <label
-            htmlFor="dotStyle"
-            className="block text-xs uppercase tracking-wide text-zinc-400 mb-2"
-          >
-            Style
-          </label>
-          <select
-            id="dotStyle"
-            value={dotStyle}
-            onChange={(e) => onDotStyleChange(e.target.value as 'dots' | 'square')}
-            className="w-full bg-zinc-800 text-zinc-100 border border-zinc-700 rounded-xl px-3 py-2 text-sm"
-          >
-            <option value="square">Carré</option>
-            <option value="dots">Points</option>
-          </select>
-        </div>
+        <SelectField<ECC>
+          label="ECC"
+          value={settings.ecc}
+          options={ECC_LEVELS}
+          labels={ECC_LABELS}
+          onChange={(v) => onSettingChange('ecc', v)}
+        />
+        <SelectField<DotStyle>
+          label="Style"
+          value={settings.dotStyle}
+          options={DOT_STYLES}
+          labels={DOT_STYLE_LABELS}
+          onChange={(v) => onSettingChange('dotStyle', v)}
+        />
       </div>
 
-      <div>
-        <label
-          htmlFor="centerImage"
-          className="block text-xs uppercase tracking-wide text-zinc-400 mb-2"
-        >
-          Image centrale
-        </label>
-        {centerImage ? (
-          <div className="flex flex-col gap-2">
-            <div className="w-full h-24 bg-zinc-800 border border-zinc-700 rounded-xl flex items-center justify-center overflow-hidden">
-              <img
-                src={centerImage}
-                alt="Centre"
-                className="max-h-full max-w-full object-contain"
-              />
-            </div>
-            <button
-              onClick={handleRemoveImage}
-              className="w-full bg-zinc-800 text-zinc-100 border border-zinc-700 rounded-xl px-3 py-2 text-sm hover:bg-zinc-700 transition-colors"
-            >
-              Supprimer l&apos;image
-            </button>
-          </div>
-        ) : (
-          <label
-            htmlFor="centerImage"
-            className="w-full h-10 bg-zinc-800 text-zinc-100 border border-zinc-700 rounded-xl px-3 py-2 text-sm flex items-center justify-center cursor-pointer hover:bg-zinc-700 transition-colors"
-          >
-            Choisir une image
-            <input
-              id="centerImage"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="hidden"
-            />
-          </label>
-        )}
-      </div>
+      <ImageUploader
+        value={settings.centerImage}
+        onChange={(v) => onSettingChange('centerImage', v)}
+      />
 
       <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="fg" className="block text-xs uppercase tracking-wide text-zinc-400 mb-2">
-            Couleur
-          </label>
-          <input
-            id="fg"
-            type="color"
-            value={foregroundColor}
-            onChange={(e) => onForegroundColorChange(e.target.value)}
-            className="w-full h-10 bg-zinc-800 border border-zinc-700 rounded-xl"
-          />
-        </div>
-        <div>
-          <label htmlFor="bg" className="block text-xs uppercase tracking-wide text-zinc-400 mb-2">
-            Fond
-          </label>
-          <input
-            id="bg"
-            type="color"
-            value={backgroundColor}
-            onChange={(e) => onBackgroundColorChange(e.target.value)}
-            className="w-full h-10 bg-zinc-800 border border-zinc-700 rounded-xl"
-          />
-        </div>
+        <ColorPicker
+          label="Couleur"
+          value={settings.foregroundColor}
+          onChange={(v) => onSettingChange('foregroundColor', v)}
+        />
+        <ColorPicker
+          label="Fond"
+          value={settings.backgroundColor}
+          onChange={(v) => onSettingChange('backgroundColor', v)}
+        />
       </div>
-      <CanvasExport backgroundColor={backgroundColor} cornersStyle={cornersStyle} />
+
+      <CanvasExport backgroundColor={settings.backgroundColor} cornersStyle={settings.cornersStyle} />
     </section>
   )
 }
-
-export default ControlPanel
