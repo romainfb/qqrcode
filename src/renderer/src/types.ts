@@ -8,6 +8,7 @@ export interface QRSettings {
   foregroundColor: string
   backgroundColor: string
   cornersStyle: CornersStyle
+  centerImage?: string
 }
 
 export interface CanvasProps {
@@ -26,6 +27,8 @@ export interface ControlPanelProps {
   onForegroundColorChange: (v: string) => void
   backgroundColor: string
   onBackgroundColorChange: (v: string) => void
+  centerImage?: string
+  onCenterImageChange: (v: string | undefined) => void
 }
 
 export interface InputAreaProps {

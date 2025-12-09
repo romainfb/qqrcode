@@ -12,7 +12,8 @@ function App(): React.JSX.Element {
     dotStyle: 'square',
     foregroundColor: '#e5e7eb',
     backgroundColor: '#18181b',
-    cornersStyle: 'square'
+    cornersStyle: 'square',
+    centerImage: undefined
   })
 
   const onGenerate = () => {
@@ -26,6 +27,7 @@ function App(): React.JSX.Element {
   const onEccChange = (v: 'L' | 'M' | 'Q' | 'H') => setSettings((s) => ({ ...s, ecc: v }))
   const onForegroundColorChange = (v: string) => setSettings((s) => ({ ...s, foregroundColor: v }))
   const onBackgroundColorChange = (v: string) => setSettings((s) => ({ ...s, backgroundColor: v }))
+  const onCenterImageChange = (v: string | undefined) => setSettings((s) => ({ ...s, centerImage: v }))
 
   const generateDisabled = input.trim().length === 0
 
@@ -52,6 +54,8 @@ function App(): React.JSX.Element {
           onForegroundColorChange={onForegroundColorChange}
           backgroundColor={settings.backgroundColor}
           onBackgroundColorChange={onBackgroundColorChange}
+          centerImage={settings.centerImage}
+          onCenterImageChange={onCenterImageChange}
         />
       </div>
     </section>

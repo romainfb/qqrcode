@@ -8,13 +8,12 @@ function Canvas({ data, settings }: CanvasProps): React.JSX.Element {
 
   const SIZE = 400
 
-  const cornersSquareType = settings.cornersStyle === 'rounded' ? 'extra-rounded' : 'square'
-  const cornersDotType = settings.cornersStyle === 'rounded' ? 'dot' : 'square'
-
   useEffect(() => {
-    if (!containerRef.current || qrRef.current) return
+    if (!containerRef.current) return
 
-    const qr = new QRCodeStyling({
+    containerRef.current.innerHTML = ''
+
+    const qrConfig: any = {
       width: SIZE,
       height: SIZE,
       data,
@@ -26,32 +25,6 @@ function Canvas({ data, settings }: CanvasProps): React.JSX.Element {
         color: settings.foregroundColor
       },
       cornersSquareOptions: {
-        type: cornersSquareType as any,
-        color: settings.foregroundColor
-      },
-      cornersDotOptions: {
-        type: cornersDotType as any,
-        color: settings.foregroundColor
-      },
-      backgroundOptions: {
-        color: 'transparent'
-      }
-    })
-
-    qrRef.current = qr
-    qr.append(containerRef.current)
-  }, [])
-
-  useEffect(() => {
-    if (!qrRef.current) return
-
-    qrRef.current.update({
-      width: SIZE,
-      height: SIZE,
-      data,
-      qrOptions: { errorCorrectionLevel: settings.ecc },
-      dotsOptions: { type: settings.dotStyle as any, color: settings.foregroundColor },
-      cornersSquareOptions: {
         type: settings.cornersStyle === 'rounded' ? 'extra-rounded' : 'square',
         color: settings.foregroundColor
       },
@@ -59,8 +32,23 @@ function Canvas({ data, settings }: CanvasProps): React.JSX.Element {
         type: settings.cornersStyle === 'rounded' ? 'dot' : 'square',
         color: settings.foregroundColor
       },
-      backgroundOptions: { color: 'transparent' }
-    } as any)
+      backgroundOptions: {
+        color: 'transparent'
+      }
+    }
+
+    if (settings.centerImage) {
+      qrConfig.image = settings.centerImage
+      qrConfig.imageOptions = {
+        hideBackgroundDots: true,
+        imageSize: 0.4,
+        margin: 8
+      }
+    }
+
+    const qr = new QRCodeStyling(qrConfig)
+    qrRef.current = qr
+    qr.append(containerRef.current)
   }, [data, settings])
 
   return (
