@@ -23,8 +23,7 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
-    "@tailwindcss/vite": "^4.1.17",
-    "tailwindcss": "^4.1.17"
+    "qr-code-styling": "^1.7.1"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
@@ -44,6 +43,9 @@
     "prettier": "^3.7.4",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
+    "tailwindcss": "^4.1.17",
+    "@tailwindcss/vite": "^4.1.17",
+    "qr-code-styling": "^1.7.1",
     "typescript": "^5.9.3",
     "vite": "^7.2.6"
   }
