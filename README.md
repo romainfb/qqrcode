@@ -1,34 +1,91 @@
-# qqrcode
+# QQrCode
 
-An Electron application with React and TypeScript
+![QRCode Generator](https://img.shields.io/badge/QRCode-Generator-blue.svg)
+![Open Source](https://img.shields.io/badge/Open%20Source-yes-brightgreen)
+![TypeScript](https://img.shields.io/badge/TypeScript-blue)
+![Electron](https://img.shields.io/badge/Electron-app-lightgrey)
+![License](https://img.shields.io/github/license/romainfb/qqrcode)
 
-## Recommended IDE Setup
+QRCode Generator – Open source Electron App
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+---
 
-## Project Setup
+## 🚀 Overview
 
-### Install
+**QQrCode** is a simple, intuitive desktop application for generating custom QR Codes. Built with [Electron](https://www.electronjs.org/), it offers a modern and smooth user experience while remaining completely open source.
+
+---
+
+## 🧩 Features
+
+- Fast QR Code generation
+- Supports multiple formats (text, URL, etc.)
+- Export as PNG / SVG
+- Live preview
+- Color and size customization
+- User-friendly interface
+
+---
+
+## 🎉 Preview
+
+![QQrCode Screenshot](./screenshot.png) <!-- Replace with your screenshot if needed -->
+
+---
+
+## 🛠️ Technologies
+
+- **TypeScript**
+- **JavaScript**
+- **HTML**
+- **CSS**
+
+---
+
+## 📦 Installation
 
 ```bash
-$ npm install
+git clone https://github.com/romainfb/qqrcode.git
+cd qqrcode
+npm install
+npm run electron
 ```
 
-### Development
+---
 
-```bash
-$ npm run dev
-```
+## 🤝 Contributors
 
-### Build
+| Avatar | Username | Role |
+|--------|----------|------|
+| ![romainfb](https://github.com/romainfb.png) | [romainfb](https://github.com/romainfb) | Creator · Maintainer |
+| ![tibopauljack](https://github.com/tibopauljack.png) | [tibopauljack](https://github.com/romainfb) | Creator · Maintainer |
 
-```bash
-# For windows
-$ npm run build:win
+---
 
-# For macOS
-$ npm run build:mac
+## 📝 Contributing
 
-# For Linux
-$ npm run build:linux
-```
+Contributions are welcome! To suggest an improvement, open an [issue](https://github.com/romainfb/qqrcode/issues) or a [pull request](https://github.com/romainfb/qqrcode/pulls).
+
+1. Fork the project
+2. Create your branch (`git checkout -b feat/new-feature`)
+3. Commit your changes
+4. Push (`git push origin feat/new-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 📫 Contact
+
+For questions or suggestions, reach out to [romainfb](https://github.com/romainfb).
+
+---
+
+## ⭐️ Acknowledgements
+
+Thanks to everyone who tests or improves the app!
