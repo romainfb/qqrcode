@@ -8,7 +8,7 @@ export const InputArea = ({
   disabled
 }: InputAreaProps): React.JSX.Element => {
   return (
-    <section className={'w-full bg-zinc-900 border-b border-zinc-800'}>
+    <section className={'w-full bg-black border-b border-zinc-800'}>
       <div className="flex gap-4 p-4">
         <input
           type="text"

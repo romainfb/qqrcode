@@ -31,7 +31,7 @@ function ControlPanel({
   }
 
   return (
-    <section className={'w-80 h-full bg-zinc-900 border-l border-zinc-800 p-4 flex flex-col gap-6'}>
+    <section className={'w-80 h-full bg-black border-l border-zinc-800 p-4 flex flex-col gap-6'}>
       <div>
         <label
           htmlFor="cornersStyle"
