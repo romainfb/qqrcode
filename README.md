@@ -23,6 +23,7 @@ QRCode Generator – Open source Electron App
 - Export as PNG / SVG
 - Live preview
 - Color and size customization
+- **History management** - Save and restore up to 3 recent QR codes with their settings
 - User-friendly interface
 
 ---
