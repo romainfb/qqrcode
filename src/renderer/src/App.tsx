@@ -39,10 +39,11 @@ function App() {
       try {
         const dataUrl = await getDataUrlRef.current?.()
         if (dataUrl && selectedId) {
+          const imagePath = await window.api.asset.saveQRCode(dataUrl, selectedId)
           const updatedItem: QRCodeData = {
             id: selectedId,
             data,
-            dataUrl,
+            imagePath,
             settings: { ...settings },
             createdAt: Date.now()
           }
@@ -74,10 +75,12 @@ function App() {
       try {
         const dataUrl = await getDataUrlRef.current?.()
         if (dataUrl) {
+          const newId = crypto.randomUUID()
+          const imagePath = await window.api.asset.saveQRCode(dataUrl, newId)
           const newItem: QRCodeData = {
-            id: crypto.randomUUID(),
+            id: newId,
             data: trimmed,
-            dataUrl,
+            imagePath,
             settings: { ...settings },
             createdAt: Date.now()
           }

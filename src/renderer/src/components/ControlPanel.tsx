@@ -42,8 +42,8 @@ export default function ControlPanel({ settings, onSettingChange }: ControlPanel
       </div>
 
       <ImageUploader
-        value={settings.centerImage}
-        onChange={(v) => onSettingChange('centerImage', v)}
+        value={settings.centerImagePath}
+        onChange={(v) => onSettingChange('centerImagePath', v)}
       />
 
       <div className="grid grid-cols-2 gap-4">

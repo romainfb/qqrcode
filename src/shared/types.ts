@@ -36,13 +36,13 @@ export interface QRSettings {
   foregroundColor: string
   backgroundColor: string
   cornersStyle: CornersStyle
-  centerImage?: string
+  centerImagePath?: string
 }
 
 export interface QRCodeData {
   id: string
   data: string
-  dataUrl: string
+  imagePath: string
   settings: QRSettings
   createdAt: number
 }
