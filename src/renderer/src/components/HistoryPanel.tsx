@@ -1,4 +1,5 @@
 import type { QRCodeData } from '../types'
+import type { JSX } from 'react'
 
 interface HistoryPanelProps {
   history: QRCodeData[]
@@ -6,7 +7,11 @@ interface HistoryPanelProps {
   selectedId: string | null
 }
 
-export default function HistoryPanel({ history, onSelect, selectedId }: HistoryPanelProps) {
+export default function HistoryPanel({
+  history,
+  onSelect,
+  selectedId
+}: HistoryPanelProps): JSX.Element {
   return (
     <aside className="w-32 bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col gap-4">
       <h2 className="text-zinc-400 text-sm font-medium border-b border-zinc-800 pb-2">History</h2>
@@ -51,4 +56,3 @@ export default function HistoryPanel({ history, onSelect, selectedId }: HistoryP
     </aside>
   )
 }
-

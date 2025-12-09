@@ -1,6 +1,6 @@
 import { useEffect, useRef, JSX } from 'react'
 import type { CanvasProps } from '@renderer/types'
-import QRCodeStyling from 'qr-code-styling'
+import QRCodeStyling, { type Options } from 'qr-code-styling'
 
 interface CanvasPropsWithCallback extends CanvasProps {
   onQRReady?: (getDataUrl: () => Promise<string>) => void
@@ -17,7 +17,7 @@ function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback): JSX.Ele
 
     containerRef.current.innerHTML = ''
 
-    const qrConfig: any = {
+    const qrConfig: Partial<Options> = {
       width: SIZE,
       height: SIZE,
       data,
@@ -67,7 +67,7 @@ function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback): JSX.Ele
         })
       })
     }
-  }, [data, settings])
+  }, [data, settings, onQRReady])
 
   return (
     <section
@@ -80,4 +80,3 @@ function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback): JSX.Ele
 }
 
 export default Canvas
-

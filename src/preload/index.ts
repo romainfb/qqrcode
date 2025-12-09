@@ -8,4 +8,3 @@ contextBridge.exposeInMainWorld('api', {
     clear: (): Promise<QRCodeData[]> => ipcRenderer.invoke('history:clear')
   }
 })
-

@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef, JSX} from 'react'
+import { useState, useEffect, useRef, useCallback, JSX } from 'react'
 import type { QRSettings, CornersStyle, QRCodeData } from './types'
 import InputArea from '@renderer/components/InputArea'
 import Canvas from '@renderer/components/Canvas'
@@ -18,7 +18,9 @@ function App(): JSX.Element {
   })
   const [history, setHistory] = useState<QRCodeData[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [pendingSave, setPendingSave] = useState<{ data: string; settings: QRSettings } | null>(null)
+  const [pendingSave, setPendingSave] = useState<{ data: string; settings: QRSettings } | null>(
+    null
+  )
   const getDataUrlRef = useRef<(() => Promise<string>) | null>(null)
 
   useEffect(() => {
@@ -28,7 +30,7 @@ function App(): JSX.Element {
   useEffect(() => {
     if (!pendingSave || !getDataUrlRef.current) return
 
-    const saveToHistory = async () => {
+    const saveToHistory = async (): Promise<void> => {
       try {
         const dataUrl = await getDataUrlRef.current?.()
         if (dataUrl) {
@@ -53,30 +55,35 @@ function App(): JSX.Element {
     saveToHistory()
   }, [pendingSave])
 
-  const onGenerate = () => {
+  const onGenerate = (): void => {
     const trimmed = input.trim()
     if (!trimmed) return
     setData(trimmed)
     setPendingSave({ data: trimmed, settings })
   }
 
-  const onQRReady = (getDataUrl: () => Promise<string>) => {
+  const onQRReady = useCallback((getDataUrl: () => Promise<string>): void => {
     getDataUrlRef.current = getDataUrl
-  }
+  }, [])
 
-  const onSelectHistory = (item: QRCodeData) => {
+  const onSelectHistory = (item: QRCodeData): void => {
     setData(item.data)
     setSettings(item.settings)
     setInput(item.data)
     setSelectedId(item.id)
   }
 
-  const onCornersStyleChange = (v: CornersStyle) => setSettings((s) => ({ ...s, cornersStyle: v }))
-  const onDotStyleChange = (v: 'dots' | 'square') => setSettings((s) => ({ ...s, dotStyle: v }))
-  const onEccChange = (v: 'L' | 'M' | 'Q' | 'H') => setSettings((s) => ({ ...s, ecc: v }))
-  const onForegroundColorChange = (v: string) => setSettings((s) => ({ ...s, foregroundColor: v }))
-  const onBackgroundColorChange = (v: string) => setSettings((s) => ({ ...s, backgroundColor: v }))
-  const onCenterImageChange = (v: string | undefined) => setSettings((s) => ({ ...s, centerImage: v }))
+  const onCornersStyleChange = (v: CornersStyle): void =>
+    setSettings((s) => ({ ...s, cornersStyle: v }))
+  const onDotStyleChange = (v: 'dots' | 'square'): void =>
+    setSettings((s) => ({ ...s, dotStyle: v }))
+  const onEccChange = (v: 'L' | 'M' | 'Q' | 'H'): void => setSettings((s) => ({ ...s, ecc: v }))
+  const onForegroundColorChange = (v: string): void =>
+    setSettings((s) => ({ ...s, foregroundColor: v }))
+  const onBackgroundColorChange = (v: string): void =>
+    setSettings((s) => ({ ...s, backgroundColor: v }))
+  const onCenterImageChange = (v: string | undefined): void =>
+    setSettings((s) => ({ ...s, centerImage: v }))
 
   const generateDisabled = input.trim().length === 0
 
@@ -113,4 +120,3 @@ function App(): JSX.Element {
 }
 
 export default App
-

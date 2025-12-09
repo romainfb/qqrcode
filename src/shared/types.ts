@@ -18,4 +18,3 @@ export interface QRCodeData {
   settings: QRSettings
   createdAt: number
 }
-
