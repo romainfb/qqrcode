@@ -1,5 +1,5 @@
 import type { ControlPanelProps } from '@renderer/types'
-import {ChangeEvent, JSX} from "react";
+import { ChangeEvent, JSX } from 'react'
 
 function ControlPanel({
   cornersStyle,
@@ -15,7 +15,7 @@ function ControlPanel({
   centerImage,
   onCenterImageChange
 }: ControlPanelProps): JSX.Element {
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0]
     if (file) {
       const reader = new FileReader()
@@ -26,7 +26,7 @@ function ControlPanel({
     }
   }
 
-  const handleRemoveImage = () => {
+  const handleRemoveImage = (): void => {
     onCenterImageChange(undefined)
   }
 
@@ -96,13 +96,17 @@ function ControlPanel({
         {centerImage ? (
           <div className="flex flex-col gap-2">
             <div className="w-full h-24 bg-zinc-800 border border-zinc-700 rounded-xl flex items-center justify-center overflow-hidden">
-              <img src={centerImage} alt="Centre" className="max-h-full max-w-full object-contain" />
+              <img
+                src={centerImage}
+                alt="Centre"
+                className="max-h-full max-w-full object-contain"
+              />
             </div>
             <button
               onClick={handleRemoveImage}
               className="w-full bg-zinc-800 text-zinc-100 border border-zinc-700 rounded-xl px-3 py-2 text-sm hover:bg-zinc-700 transition-colors"
             >
-              Supprimer l'image
+              Supprimer l&apos;image
             </button>
           </div>
         ) : (

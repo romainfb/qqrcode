@@ -23,6 +23,7 @@ QRCode Generator – Open source Electron App
 - Export as PNG / SVG
 - Live preview
 - Color and size customization
+- **History management** - Save and restore up to 3 recent QR codes with their settings
 - User-friendly interface
 
 ---
@@ -55,9 +56,9 @@ npm run electron
 
 ## 🤝 Contributors
 
-| Avatar | Username | Role |
-|--------|----------|------|
-| ![romainfb](https://github.com/romainfb.png) | [romainfb](https://github.com/romainfb) | Creator · Maintainer |
+| Avatar                                               | Username                                    | Role                 |
+| ---------------------------------------------------- | ------------------------------------------- | -------------------- |
+| ![romainfb](https://github.com/romainfb.png)         | [romainfb](https://github.com/romainfb)     | Creator · Maintainer |
 | ![tibopauljack](https://github.com/tibopauljack.png) | [tibopauljack](https://github.com/romainfb) | Creator · Maintainer |
 
 ---

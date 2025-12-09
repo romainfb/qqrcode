@@ -1,15 +1,5 @@
-export type DotStyle = 'dots' | 'square'
-export type ECC = 'L' | 'M' | 'Q' | 'H'
-export type CornersStyle = 'square' | 'rounded'
-
-export interface QRSettings {
-  ecc: ECC
-  dotStyle: DotStyle
-  foregroundColor: string
-  backgroundColor: string
-  cornersStyle: CornersStyle
-  centerImage?: string
-}
+export type { DotStyle, ECC, CornersStyle, QRSettings, QRCodeData } from '../../shared/types'
+import type { CornersStyle, DotStyle, ECC, QRSettings } from '../../shared/types'
 
 export interface CanvasProps {
   data: string

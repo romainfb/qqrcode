@@ -1,5 +1,32 @@
-import { app, BrowserWindow, nativeImage } from 'electron'
+import { app, BrowserWindow, nativeImage, ipcMain } from 'electron'
 import { join } from 'path'
+import SimpleStore from './store'
+import { QRCodeData } from '../shared/types'
+
+let store: SimpleStore
+
+ipcMain.handle('history:get', () => {
+  return store.get('history')
+})
+
+ipcMain.handle('history:add', (_event, item: QRCodeData) => {
+  const history = store.get('history')
+  const newHistory = [item, ...history].slice(0, 3)
+  store.set('history', newHistory)
+  return newHistory
+})
+
+ipcMain.handle('history:update', (_event, item: QRCodeData) => {
+  const history = store.get('history')
+  const newHistory = history.map((h) => (h.id === item.id ? item : h))
+  store.set('history', newHistory)
+  return newHistory
+})
+
+ipcMain.handle('history:clear', () => {
+  store.set('history', [])
+  return []
+})
 
 const iconPath = join(__dirname, '../../resources/icon.png')
 const iconImage = nativeImage.createFromPath(iconPath)
@@ -51,6 +78,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  store = new SimpleStore()
   createWindow()
 
   app.on('activate', function () {
