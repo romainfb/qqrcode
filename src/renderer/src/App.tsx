@@ -9,10 +9,10 @@ function App(): React.JSX.Element {
   const [data, setData] = useState<string>('QQRCode')
   const [settings, setSettings] = useState<QRSettings>({
     ecc: 'M',
-    dotStyle: 'square',
+    dotStyle: 'dots',
     foregroundColor: '#e5e7eb',
     backgroundColor: '#18181b',
-    cornersStyle: 'square',
+    cornersStyle: 'rounded',
     centerImage: undefined
   })
 
