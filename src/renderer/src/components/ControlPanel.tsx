@@ -1,5 +1,6 @@
 import type { ControlPanelProps } from '@renderer/types'
 import { ChangeEvent, JSX } from 'react'
+import CanvasExport from '@renderer/components/CanvasExport'
 
 function ControlPanel({
   cornersStyle,
@@ -152,6 +153,7 @@ function ControlPanel({
           />
         </div>
       </div>
+      <CanvasExport backgroundColor={backgroundColor} cornersStyle={cornersStyle} />
     </section>
   )
 }

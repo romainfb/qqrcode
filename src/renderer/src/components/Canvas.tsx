@@ -74,7 +74,7 @@ function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback): JSX.Ele
       className={'w-full h-full flex items-center justify-center'}
       style={{ backgroundColor: settings.backgroundColor }}
     >
-      <div ref={containerRef} />
+      <div ref={containerRef} id="qr-container" />
     </section>
   )
 }
