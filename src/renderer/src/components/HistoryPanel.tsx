@@ -1,5 +1,5 @@
 import type { QRCodeData } from '../types'
-import { JSX } from 'react'
+import type { JSX } from 'react'
 
 interface HistoryPanelProps {
   history: QRCodeData[]

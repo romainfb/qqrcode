@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, JSX } from 'react'
+import { useState, useEffect, useRef, useCallback, JSX } from 'react'
 import type { QRSettings, CornersStyle, QRCodeData } from './types'
 import InputArea from '@renderer/components/InputArea'
 import Canvas from '@renderer/components/Canvas'
@@ -62,9 +62,9 @@ function App(): JSX.Element {
     setPendingSave({ data: trimmed, settings })
   }
 
-  const onQRReady = (getDataUrl: () => Promise<string>): void => {
+  const onQRReady = useCallback((getDataUrl: () => Promise<string>): void => {
     getDataUrlRef.current = getDataUrl
-  }
+  }, [])
 
   const onSelectHistory = (item: QRCodeData): void => {
     setData(item.data)
