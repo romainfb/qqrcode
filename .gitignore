@@ -9,6 +9,7 @@ build
 ## IDE files & agents AI
 .vscode/
 .idea/
+.idea
 *.idea.*
 *.idea
 *.sublime-workspace
