@@ -1,14 +1,8 @@
-'use client'
 import type { InputAreaProps } from '@renderer/types'
 
-export const InputArea = ({
-  value,
-  onChange,
-  onGenerate,
-  disabled
-}: InputAreaProps): React.JSX.Element => {
+export default function InputArea({ value, onChange, onGenerate, disabled }: InputAreaProps) {
   return (
-    <section className={'w-full bg-black border-b border-zinc-800'}>
+    <section className="w-full bg-black border-b border-zinc-800">
       <div className="flex gap-4 p-4">
         <input
           type="text"
@@ -34,5 +28,3 @@ export const InputArea = ({
     </section>
   )
 }
-
-export default InputArea

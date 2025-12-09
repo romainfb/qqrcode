@@ -1,28 +1,22 @@
-import { useState, useEffect, useRef, useCallback, JSX } from 'react'
-import type { QRSettings, CornersStyle, QRCodeData } from './types'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import type { QRCodeData, SaveStatus } from './types'
 import InputArea from '@renderer/components/InputArea'
 import Canvas from '@renderer/components/Canvas'
 import ControlPanel from '@renderer/components/ControlPanel'
 import HistoryPanel from '@renderer/components/HistoryPanel'
-import SaveIndicator, { type SaveStatus } from '@renderer/components/SaveIndicator'
+import SaveIndicator from '@renderer/components/SaveIndicator'
+import { ToastContainer, useToast } from '@renderer/components/Toast'
+import { useQRSettings } from './hooks'
 
-function App(): JSX.Element {
-  const [input, setInput] = useState<string>('')
-  const [data, setData] = useState<string>('QQRCode')
-  const [settings, setSettings] = useState<QRSettings>({
-    ecc: 'M',
-    dotStyle: 'dots',
-    foregroundColor: '#e5e7eb',
-    backgroundColor: '#18181b',
-    cornersStyle: 'rounded',
-    centerImage: undefined
-  })
+function App() {
+  const [input, setInput] = useState('')
+  const [data, setData] = useState('QQRCode')
+  const { settings, setSettings, updateSetting } = useQRSettings()
   const [history, setHistory] = useState<QRCodeData[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [pendingSave, setPendingSave] = useState<{ data: string; settings: QRSettings } | null>(
-    null
-  )
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const { toasts, addToast, removeToast } = useToast()
+
   const getDataUrlRef = useRef<(() => Promise<string>) | null>(null)
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastSavedSettingsRef = useRef<string | null>(null)
@@ -31,16 +25,14 @@ function App(): JSX.Element {
     window.api.history.get().then(setHistory)
   }, [])
 
+  // Auto-save effect
   useEffect(() => {
     if (!selectedId) return
 
     const currentSettingsKey = JSON.stringify({ settings, data, selectedId })
     if (lastSavedSettingsRef.current === currentSettingsKey) return
 
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current)
-    }
-
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
     setSaveStatus('saving')
 
     debounceTimerRef.current = setTimeout(async () => {
@@ -58,7 +50,6 @@ function App(): JSX.Element {
           setHistory(newHistory)
           lastSavedSettingsRef.current = currentSettingsKey
           setSaveStatus('saved')
-          // Remettre à idle après 2 secondes
           setTimeout(() => setSaveStatus('idle'), 2000)
         }
       } catch (error) {
@@ -68,53 +59,46 @@ function App(): JSX.Element {
     }, 1000)
 
     return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current)
-      }
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
     }
   }, [settings, selectedId, data])
 
-  useEffect(() => {
-    if (!pendingSave || !getDataUrlRef.current) return
+  const onGenerate = async () => {
+    const trimmed = input.trim()
+    if (!trimmed) return
 
-    const saveToHistory = async (): Promise<void> => {
+    setData(trimmed)
+
+    // Attendre le prochain render pour que le QR soit généré
+    setTimeout(async () => {
       try {
         const dataUrl = await getDataUrlRef.current?.()
         if (dataUrl) {
           const newItem: QRCodeData = {
             id: crypto.randomUUID(),
-            data: pendingSave.data,
+            data: trimmed,
             dataUrl,
-            settings: { ...pendingSave.settings },
+            settings: { ...settings },
             createdAt: Date.now()
           }
           const newHistory = await window.api.history.add(newItem)
           setHistory(newHistory)
           setSelectedId(newItem.id)
+          lastSavedSettingsRef.current = JSON.stringify({ settings, data: trimmed, selectedId: newItem.id })
+          addToast('QR code généré !', 'success')
         }
       } catch (error) {
         console.error('Failed to save QR code to history:', error)
-      } finally {
-        setPendingSave(null)
+        addToast('Erreur lors de la génération', 'error')
       }
-    }
-
-    saveToHistory()
-  }, [pendingSave])
-
-  const onGenerate = (): void => {
-    const trimmed = input.trim()
-    if (!trimmed) return
-    setData(trimmed)
-    setPendingSave({ data: trimmed, settings })
+    }, 100)
   }
 
-  const onQRReady = useCallback((getDataUrl: () => Promise<string>): void => {
+  const onQRReady = useCallback((getDataUrl: () => Promise<string>) => {
     getDataUrlRef.current = getDataUrl
   }, [])
 
-  const onSelectHistory = (item: QRCodeData): void => {
-    // Mettre à jour la ref avant de changer les states pour éviter un auto-save
+  const onSelectHistory = (item: QRCodeData) => {
     lastSavedSettingsRef.current = JSON.stringify({ settings: item.settings, data: item.data, selectedId: item.id })
     setData(item.data)
     setSettings(item.settings)
@@ -122,27 +106,13 @@ function App(): JSX.Element {
     setSelectedId(item.id)
   }
 
-  const onCornersStyleChange = (v: CornersStyle): void =>
-    setSettings((s) => ({ ...s, cornersStyle: v }))
-  const onDotStyleChange = (v: 'dots' | 'square'): void =>
-    setSettings((s) => ({ ...s, dotStyle: v }))
-  const onEccChange = (v: 'L' | 'M' | 'Q' | 'H'): void => setSettings((s) => ({ ...s, ecc: v }))
-  const onForegroundColorChange = (v: string): void =>
-    setSettings((s) => ({ ...s, foregroundColor: v }))
-  const onBackgroundColorChange = (v: string): void =>
-    setSettings((s) => ({ ...s, backgroundColor: v }))
-  const onCenterImageChange = (v: string | undefined): void =>
-    setSettings((s) => ({ ...s, centerImage: v }))
-
-  const generateDisabled = input.trim().length === 0
-
   return (
     <section className="h-screen w-screen bg-zinc-800 flex flex-col overflow-hidden">
       <InputArea
         value={input}
         onChange={setInput}
         onGenerate={onGenerate}
-        disabled={generateDisabled}
+        disabled={!input.trim()}
       />
       <div className="flex w-full h-full flex-1">
         <HistoryPanel history={history} onSelect={onSelectHistory} selectedId={selectedId} />
@@ -150,21 +120,9 @@ function App(): JSX.Element {
           <Canvas data={data} settings={settings} onQRReady={onQRReady} />
           <SaveIndicator status={saveStatus} />
         </div>
-        <ControlPanel
-          cornersStyle={settings.cornersStyle}
-          onCornersStyleChange={onCornersStyleChange}
-          dotStyle={settings.dotStyle}
-          onDotStyleChange={onDotStyleChange}
-          ecc={settings.ecc}
-          onEccChange={onEccChange}
-          foregroundColor={settings.foregroundColor}
-          onForegroundColorChange={onForegroundColorChange}
-          backgroundColor={settings.backgroundColor}
-          onBackgroundColorChange={onBackgroundColorChange}
-          centerImage={settings.centerImage}
-          onCenterImageChange={onCenterImageChange}
-        />
+        <ControlPanel settings={settings} onSettingChange={updateSetting} />
       </div>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </section>
   )
 }
