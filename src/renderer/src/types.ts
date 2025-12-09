@@ -27,4 +27,3 @@ export interface InputAreaProps {
   onGenerate: () => void
   disabled?: boolean
 }
-

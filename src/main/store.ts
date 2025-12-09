@@ -1,8 +1,7 @@
 import { app } from 'electron'
 import { join } from 'path'
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs'
-import {QRCodeData} from "../shared/types";
-import error from "eslint-plugin-react/lib/util/error";
+import { QRCodeData } from '../shared/types'
 
 interface StoreData {
   history: QRCodeData[]
@@ -26,8 +25,8 @@ class SimpleStore {
       if (existsSync(this.filePath)) {
         return JSON.parse(readFileSync(this.filePath, 'utf-8'))
       }
-    } catch {
-      console.error('Failed to load store.json:', error)
+    } catch (err) {
+      console.error('Failed to load store.json:', err)
     }
     return { history: [] }
   }
@@ -47,4 +46,3 @@ class SimpleStore {
 }
 
 export default SimpleStore
-

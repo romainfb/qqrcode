@@ -55,9 +55,9 @@ npm run electron
 
 ## 🤝 Contributors
 
-| Avatar | Username | Role |
-|--------|----------|------|
-| ![romainfb](https://github.com/romainfb.png) | [romainfb](https://github.com/romainfb) | Creator · Maintainer |
+| Avatar                                               | Username                                    | Role                 |
+| ---------------------------------------------------- | ------------------------------------------- | -------------------- |
+| ![romainfb](https://github.com/romainfb.png)         | [romainfb](https://github.com/romainfb)     | Creator · Maintainer |
 | ![tibopauljack](https://github.com/tibopauljack.png) | [tibopauljack](https://github.com/romainfb) | Creator · Maintainer |
 
 ---
