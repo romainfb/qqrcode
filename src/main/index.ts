@@ -16,6 +16,13 @@ ipcMain.handle('history:add', (_event, item: QRCodeData) => {
   return newHistory
 })
 
+ipcMain.handle('history:update', (_event, item: QRCodeData) => {
+  const history = store.get('history')
+  const newHistory = history.map((h) => (h.id === item.id ? item : h))
+  store.set('history', newHistory)
+  return newHistory
+})
+
 ipcMain.handle('history:clear', () => {
   store.set('history', [])
   return []

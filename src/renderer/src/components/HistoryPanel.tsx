@@ -26,14 +26,15 @@ export default function HistoryPanel({
               key={index}
               onClick={() => item && onSelect(item)}
               disabled={!item}
+              style={item ? { backgroundColor: item.settings.backgroundColor } : undefined}
               className={`
                 aspect-square rounded-2xl flex items-center justify-center
                 transition-all text-xs font-medium
                 ${
                   item
                     ? isSelected
-                      ? 'ring-2 ring-emerald-500 bg-zinc-800 shadow-lg cursor-pointer'
-                      : 'bg-zinc-800 hover:bg-zinc-700 shadow-md cursor-pointer'
+                      ? 'ring-2 ring-white shadow-lg cursor-pointer'
+                      : 'hover:opacity-80 shadow-md cursor-pointer'
                     : 'bg-zinc-800/50 border border-dashed border-zinc-700 cursor-not-allowed'
                 }
               `}

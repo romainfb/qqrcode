@@ -8,6 +8,7 @@ declare global {
       history: {
         get: () => Promise<QRCodeData[]>
         add: (item: QRCodeData) => Promise<QRCodeData[]>
+        update: (item: QRCodeData) => Promise<QRCodeData[]>
         clear: () => Promise<QRCodeData[]>
       }
     }

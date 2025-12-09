@@ -4,6 +4,7 @@ import InputArea from '@renderer/components/InputArea'
 import Canvas from '@renderer/components/Canvas'
 import ControlPanel from '@renderer/components/ControlPanel'
 import HistoryPanel from '@renderer/components/HistoryPanel'
+import SaveIndicator, { type SaveStatus } from '@renderer/components/SaveIndicator'
 
 function App(): JSX.Element {
   const [input, setInput] = useState<string>('')
@@ -21,11 +22,57 @@ function App(): JSX.Element {
   const [pendingSave, setPendingSave] = useState<{ data: string; settings: QRSettings } | null>(
     null
   )
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
   const getDataUrlRef = useRef<(() => Promise<string>) | null>(null)
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastSavedSettingsRef = useRef<string | null>(null)
 
   useEffect(() => {
     window.api.history.get().then(setHistory)
   }, [])
+
+  useEffect(() => {
+    if (!selectedId) return
+
+    const currentSettingsKey = JSON.stringify({ settings, data, selectedId })
+    if (lastSavedSettingsRef.current === currentSettingsKey) return
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+    }
+
+    setSaveStatus('saving')
+
+    debounceTimerRef.current = setTimeout(async () => {
+      try {
+        const dataUrl = await getDataUrlRef.current?.()
+        if (dataUrl && selectedId) {
+          const updatedItem: QRCodeData = {
+            id: selectedId,
+            data,
+            dataUrl,
+            settings: { ...settings },
+            createdAt: Date.now()
+          }
+          const newHistory = await window.api.history.update(updatedItem)
+          setHistory(newHistory)
+          lastSavedSettingsRef.current = currentSettingsKey
+          setSaveStatus('saved')
+          // Remettre à idle après 2 secondes
+          setTimeout(() => setSaveStatus('idle'), 2000)
+        }
+      } catch (error) {
+        console.error('Failed to auto-save QR code:', error)
+        setSaveStatus('idle')
+      }
+    }, 1000)
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+    }
+  }, [settings, selectedId, data])
 
   useEffect(() => {
     if (!pendingSave || !getDataUrlRef.current) return
@@ -67,6 +114,8 @@ function App(): JSX.Element {
   }, [])
 
   const onSelectHistory = (item: QRCodeData): void => {
+    // Mettre à jour la ref avant de changer les states pour éviter un auto-save
+    lastSavedSettingsRef.current = JSON.stringify({ settings: item.settings, data: item.data, selectedId: item.id })
     setData(item.data)
     setSettings(item.settings)
     setInput(item.data)
@@ -97,8 +146,9 @@ function App(): JSX.Element {
       />
       <div className="flex w-full h-full flex-1">
         <HistoryPanel history={history} onSelect={onSelectHistory} selectedId={selectedId} />
-        <div className="flex-1">
+        <div className="flex-1 relative">
           <Canvas data={data} settings={settings} onQRReady={onQRReady} />
+          <SaveIndicator status={saveStatus} />
         </div>
         <ControlPanel
           cornersStyle={settings.cornersStyle}
