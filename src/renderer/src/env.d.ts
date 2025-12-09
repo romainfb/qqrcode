@@ -11,6 +11,13 @@ declare global {
         update: (item: QRCodeData) => Promise<QRCodeData[]>
         clear: () => Promise<QRCodeData[]>
       }
+      asset: {
+        saveQRCode: (dataUrl: string, id: string) => Promise<string>
+        saveCenterImage: (dataUrl: string) => Promise<string>
+        load: (path: string) => Promise<string>
+        delete: (path: string) => Promise<void>
+        cleanup: () => Promise<void>
+      }
     }
   }
 }

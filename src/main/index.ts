@@ -1,9 +1,11 @@
 import { app, BrowserWindow, nativeImage, ipcMain } from 'electron'
 import { join } from 'path'
 import SimpleStore from './store'
+import { AssetManager } from './assetManager'
 import { QRCodeData } from '../shared/types'
 
 let store: SimpleStore
+let assetManager: AssetManager
 
 ipcMain.handle('history:get', () => {
   return store.get('history')
@@ -26,6 +28,36 @@ ipcMain.handle('history:update', (_event, item: QRCodeData) => {
 ipcMain.handle('history:clear', () => {
   store.set('history', [])
   return []
+})
+
+ipcMain.handle('asset:save-qr', (_event, dataUrl: string, id: string) => {
+  return assetManager.saveQRCode(dataUrl, id)
+})
+
+ipcMain.handle('asset:save-center-image', (_event, dataUrl: string) => {
+  return assetManager.saveCenterImage(dataUrl)
+})
+
+ipcMain.handle('asset:load', (_event, path: string) => {
+  return assetManager.loadImage(path)
+})
+
+ipcMain.handle('asset:delete', (_event, path: string) => {
+  assetManager.deleteImage(path)
+})
+
+ipcMain.handle('asset:cleanup', () => {
+  const history = store.get('history')
+  const usedPaths: string[] = []
+
+  for (const item of history) {
+    usedPaths.push(item.imagePath)
+    if (item.settings.centerImagePath) {
+      usedPaths.push(item.settings.centerImagePath)
+    }
+  }
+
+  assetManager.cleanup(usedPaths)
 })
 
 const iconPath = join(__dirname, '../../resources/icon.png')
@@ -78,7 +110,9 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  const userDataPath = app.getPath('userData')
   store = new SimpleStore()
+  assetManager = new AssetManager(userDataPath)
   createWindow()
 
   app.on('activate', function () {

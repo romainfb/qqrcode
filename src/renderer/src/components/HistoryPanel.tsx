@@ -1,9 +1,53 @@
+import { useEffect, useState } from 'react'
 import type { QRCodeData } from '../types'
 
 interface HistoryPanelProps {
   history: QRCodeData[]
   onSelect: (item: QRCodeData) => void
   selectedId: string | null
+}
+
+interface HistoryItemProps {
+  item: QRCodeData | undefined
+  index: number
+  isSelected: boolean
+  onSelect: (item: QRCodeData) => void
+}
+
+function HistoryItem({ item, index, isSelected, onSelect }: HistoryItemProps) {
+  const [imageDataUrl, setImageDataUrl] = useState<string | undefined>()
+
+  useEffect(() => {
+    if (item?.imagePath) {
+      window.api.asset.load(item.imagePath).then(setImageDataUrl).catch(console.error)
+    } else {
+      setImageDataUrl(undefined)
+    }
+  }, [item?.imagePath])
+
+  return (
+    <button
+      onClick={() => item && onSelect(item)}
+      disabled={!item}
+      style={item ? { backgroundColor: item.settings.backgroundColor } : undefined}
+      className={`
+        aspect-square rounded-2xl flex items-center justify-center
+        transition-all text-xs font-medium
+        ${item
+          ? isSelected
+            ? 'ring-2 ring-white shadow-lg cursor-pointer'
+            : 'hover:opacity-80 shadow-md cursor-pointer'
+          : 'bg-zinc-800/50 border border-dashed border-zinc-700 cursor-not-allowed'
+        }
+      `}
+    >
+      {item && imageDataUrl ? (
+        <img src={imageDataUrl} alt={`QR #${index + 1}`} className="w-full h-full object-contain p-2 rounded-2xl" />
+      ) : (
+        <span className="text-zinc-600">#{index + 1}</span>
+      )}
+    </button>
+  )
 }
 
 export default function HistoryPanel({ history, onSelect, selectedId }: HistoryPanelProps) {
@@ -17,28 +61,13 @@ export default function HistoryPanel({ history, onSelect, selectedId }: HistoryP
           const isSelected = item && selectedId === item.id
 
           return (
-            <button
+            <HistoryItem
               key={index}
-              onClick={() => item && onSelect(item)}
-              disabled={!item}
-              style={item ? { backgroundColor: item.settings.backgroundColor } : undefined}
-              className={`
-                aspect-square rounded-2xl flex items-center justify-center
-                transition-all text-xs font-medium
-                ${item
-                  ? isSelected
-                    ? 'ring-2 ring-white shadow-lg cursor-pointer'
-                    : 'hover:opacity-80 shadow-md cursor-pointer'
-                  : 'bg-zinc-800/50 border border-dashed border-zinc-700 cursor-not-allowed'
-                }
-              `}
-            >
-              {item ? (
-                <img src={item.dataUrl} alt={`QR #${index + 1}`} className="w-full h-full object-contain p-2 rounded-2xl" />
-              ) : (
-                <span className="text-zinc-600">#{index + 1}</span>
-              )}
-            </button>
+              item={item}
+              index={index}
+              isSelected={isSelected}
+              onSelect={onSelect}
+            />
           )
         })}
       </div>

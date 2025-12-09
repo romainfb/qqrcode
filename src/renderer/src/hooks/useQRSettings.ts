@@ -7,7 +7,7 @@ const DEFAULT_SETTINGS: QRSettings = {
   foregroundColor: '#e5e7eb',
   backgroundColor: '#18181b',
   cornersStyle: 'rounded',
-  centerImage: undefined
+  centerImagePath: undefined
 }
 
 export function useQRSettings(initial?: Partial<QRSettings>) {
