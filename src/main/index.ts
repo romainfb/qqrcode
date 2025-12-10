@@ -77,6 +77,7 @@ function createWindow(): void {
     height: 700,
     show: false,
     autoHideMenuBar: true,
+    title: 'QQRCode - Générateur de QR Codes',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: true,
