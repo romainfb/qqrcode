@@ -20,7 +20,6 @@ type AllowedFormat = (typeof ALLOWED_FORMATS)[number]
  * @throws Error if format is invalid or not allowed
  */
 export function dataUrlToBuffer(dataUrl: string): ParsedDataUrl {
-  // SEC-003: Use strict regex with whitelist of allowed formats
   const matches = dataUrl.match(/^data:image\/(png|jpeg|jpg|gif|webp);base64,(.+)$/)
   if (!matches) {
     throw new Error('Invalid data URL format')

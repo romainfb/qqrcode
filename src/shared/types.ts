@@ -1,4 +1,3 @@
-// QR Code options
 export const DOT_STYLES = ['dots', 'square'] as const
 export type DotStyle = (typeof DOT_STYLES)[number]
 
@@ -18,10 +17,8 @@ export const CORNERS_STYLE_LABELS: Record<CornersStyle, string> = {
   rounded: 'Arrondi'
 }
 
-// Re-export QR_SIZE from constants for compatibility
 export { QR_SIZE } from './constants'
 
-// Save status
 export const SAVE_STATUSES = ['idle', 'saving', 'saved'] as const
 export type SaveStatus = (typeof SAVE_STATUSES)[number]
 
@@ -57,7 +54,6 @@ export interface QRCodeData {
   createdAt: number
 }
 
-// Toast types
 export const TOAST_TYPES = ['success', 'error', 'info'] as const
 export type ToastType = (typeof TOAST_TYPES)[number]
 

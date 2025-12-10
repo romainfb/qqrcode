@@ -30,7 +30,6 @@ function ToastItem({
 
   useEffect(() => {
     let isMounted = true
-    // use requestAnimationFrame to avoid triggering setState synchronously in effect
     const raf = requestAnimationFrame(() => {
       if (isMounted) setIsVisible(true)
     })

@@ -36,7 +36,6 @@ export class AssetManager {
     const resolvedPath = resolve(filePath)
     const resolvedAssetsPath = resolve(this.assetsPath)
 
-    // Prevent path traversal attacks
     if (!resolvedPath.startsWith(resolvedAssetsPath)) {
       throw new Error(`Invalid path: attempting to access files outside assets directory`)
     }
@@ -54,7 +53,6 @@ export class AssetManager {
     const resolvedPath = resolve(filePath)
     const resolvedAssetsPath = resolve(this.assetsPath)
 
-    // Prevent path traversal attacks
     if (!resolvedPath.startsWith(resolvedAssetsPath)) {
       throw new Error(`Invalid path: attempting to access files outside assets directory`)
     }

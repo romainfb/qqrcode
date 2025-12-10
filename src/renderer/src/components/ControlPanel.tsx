@@ -12,7 +12,6 @@ import SelectField from '@renderer/components/SelectField'
 import ColorPicker from '@renderer/components/ColorPicker'
 import ImageUploader from '@renderer/components/ImageUploader'
 
-// Labels pour ECC (identiques aux valeurs)
 const ECC_LABELS: Record<ECC, string> = { L: 'L', M: 'M', Q: 'Q', H: 'H' }
 
 interface ControlPanelProps {

@@ -1,9 +1,9 @@
 import { app, BrowserWindow, ipcMain, nativeImage } from 'electron'
 import { join } from 'path'
 import { SimpleStore } from './store'
-import { AssetManager } from './AssetManager'
-import { QRCodeData } from '../shared/types'
+import { QRCodeData } from '@shared/types'
 import { MAX_HISTORY_ITEMS } from '@shared/constants'
+import { AssetManager } from './assetManager'
 
 let store: SimpleStore
 let assetManager: AssetManager
@@ -99,16 +99,12 @@ function createWindow(): void {
 
   mainWindow.webContents.on('will-navigate', (event, navigationUrl) => {
     const parsedUrl = new URL(navigationUrl)
-    if (parsedUrl.origin !== 'http://localhost:5173' && parsedUrl.origin !== 'file://') {
+    if (parsedUrl.origin !== 'file://') {
       event.preventDefault()
     }
   })
 
-  if (process.env.NODE_ENV === 'development') {
-    mainWindow.loadURL('http://localhost:5173')
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
-  }
+  mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
 }
 
 app.whenReady().then(async () => {

@@ -9,13 +9,23 @@ export function useAssetLoader(assetPath: string | undefined): string | undefine
   const [dataUrl, setDataUrl] = useState<string | undefined>()
 
   useEffect(() => {
+    let raf: number | undefined
+
     if (assetPath) {
       window.api.asset
         .load(assetPath)
         .then((url) => setDataUrl(url))
         .catch(console.error)
     } else {
-      setDataUrl(undefined)
+      raf = requestAnimationFrame(() => {
+        setDataUrl(undefined)
+      })
+    }
+
+    return () => {
+      if (raf !== undefined) {
+        cancelAnimationFrame(raf)
+      }
     }
   }, [assetPath])
 

@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { AssetManager } from '../src/main/AssetManager'
 import { SimpleStore } from '../src/main/store'
 import type { QRCodeData } from '@shared/types'
 import {
@@ -10,6 +9,7 @@ import {
 } from './fixtures'
 import * as mockFs from 'mock-fs'
 import { existsSync, readdirSync } from 'fs'
+import { AssetManager } from '../src/main/assetManager'
 
 const mock = mockFs.default || mockFs
 

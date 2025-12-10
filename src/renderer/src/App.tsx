@@ -19,7 +19,6 @@ function App(): JSX.Element {
 
   const getDataUrlRef = useRef<(() => Promise<string>) | null>(null)
 
-  // Auto-save quand les settings ou data changent
   useEffect(() => {
     if (getDataUrlRef.current) {
       autoSave(qrContent, settings, selectedId, getDataUrlRef.current)
@@ -32,7 +31,6 @@ function App(): JSX.Element {
 
     setQrContent(trimmed)
 
-    // Attendre le prochain render pour que le QR soit généré
     setTimeout(async (): Promise<void> => {
       try {
         if (getDataUrlRef.current) {
