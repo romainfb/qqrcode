@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { JSX, useId } from 'react'
 
 interface SelectFieldProps<T extends string> {
   label: string
@@ -14,7 +14,7 @@ export default function SelectField<T extends string>({
   options,
   labels,
   onChange
-}: SelectFieldProps<T>) {
+}: SelectFieldProps<T>): JSX.Element {
   const id = useId()
 
   return (

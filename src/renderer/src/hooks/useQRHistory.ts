@@ -1,7 +1,20 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import type { QRCodeData, QRSettings } from '@renderer/types'
 
-export function useQRHistory() {
+export function useQRHistory(): {
+  history: QRCodeData[]
+  selectedId: string | null
+  saveStatus: 'idle' | 'saving' | 'saved'
+  saveNew: (data: string, settings: QRSettings, getDataUrl: () => Promise<string>) => Promise<void>
+  autoSave: (
+    data: string,
+    settings: QRSettings,
+    currentSelectedId: string | null,
+    getDataUrl: () => Promise<string>
+  ) => void
+  selectFromHistory: (item: QRCodeData) => QRCodeData
+  clearHistory: () => Promise<void>
+} {
   const [history, setHistory] = useState<QRCodeData[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
@@ -13,7 +26,11 @@ export function useQRHistory() {
   }, [])
 
   const saveNew = useCallback(
-    async (data: string, settings: QRSettings, getDataUrl: () => Promise<string>) => {
+    async (
+      data: string,
+      settings: QRSettings,
+      getDataUrl: () => Promise<string>
+    ): Promise<void> => {
       const canvasDataUrl = await getDataUrl()
       if (!canvasDataUrl) return
 
@@ -41,7 +58,7 @@ export function useQRHistory() {
       settings: QRSettings,
       currentSelectedId: string | null,
       getDataUrl: () => Promise<string>
-    ) => {
+    ): void => {
       if (!currentSelectedId) return
 
       const currentKey = JSON.stringify({ settings, data, selectedId: currentSelectedId })
@@ -81,7 +98,7 @@ export function useQRHistory() {
     []
   )
 
-  const selectFromHistory = useCallback((item: QRCodeData) => {
+  const selectFromHistory = useCallback((item: QRCodeData): QRCodeData => {
     lastSavedRef.current = JSON.stringify({
       settings: item.settings,
       data: item.data,
@@ -91,7 +108,7 @@ export function useQRHistory() {
     return item
   }, [])
 
-  const clearHistory = useCallback(async () => {
+  const clearHistory = useCallback(async (): Promise<void> => {
     await window.api.history.clear()
     await window.api.asset.cleanup()
     setHistory([])

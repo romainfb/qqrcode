@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { JSX, useEffect, useState } from 'react'
 import type { QRCodeData } from '../types'
 
 interface HistoryPanelProps {
@@ -15,14 +15,17 @@ interface HistoryItemProps {
   onSelect: (item: QRCodeData) => void
 }
 
-function HistoryItem({ item, index, isSelected, onSelect }: HistoryItemProps) {
+function HistoryItem({ item, index, isSelected, onSelect }: HistoryItemProps): JSX.Element {
   const [imageDataUrl, setImageDataUrl] = useState<string | undefined>()
 
   useEffect(() => {
     if (item?.imagePath) {
-      window.api.asset.load(item.imagePath).then(setImageDataUrl).catch(console.error)
+      window.api.asset
+        .load(item.imagePath)
+        .then((d) => setTimeout(() => setImageDataUrl(d), 0))
+        .catch(console.error)
     } else {
-      setImageDataUrl(undefined)
+      setTimeout(() => setImageDataUrl(undefined), 0)
     }
   }, [item?.imagePath])
 
@@ -61,7 +64,7 @@ export default function HistoryPanel({
   onSelect,
   selectedId,
   onClear
-}: HistoryPanelProps) {
+}: HistoryPanelProps): JSX.Element {
   return (
     <aside className="w-32 bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col gap-4">
       <h2 className="text-zinc-400 text-sm font-medium border-b border-zinc-800 pb-2">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { JSX, useEffect, useState } from 'react'
 
 export interface Toast {
   id: string
@@ -6,15 +6,14 @@ export interface Toast {
   type: 'success' | 'error' | 'info'
 }
 
-const TOAST_TYPES = ['success', 'error', 'info'] as const
-export type ToastType = (typeof TOAST_TYPES)[number]
+export type ToastType = 'success' | 'error' | 'info'
 
 interface ToastContainerProps {
   toasts: Toast[]
   onRemove: (id: string) => void
 }
 
-export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
+export function ToastContainer({ toasts, onRemove }: ToastContainerProps): JSX.Element {
   return (
     <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
       {toasts.map((toast) => (
@@ -24,16 +23,31 @@ export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
   )
 }
 
-function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) => void }) {
+function ToastItem({
+  toast,
+  onRemove
+}: {
+  toast: Toast
+  onRemove: (id: string) => void
+}): JSX.Element {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    setIsVisible(true)
+    let mounted = true
+    // use requestAnimationFrame to avoid triggering setState synchronously in effect
+    const raf = requestAnimationFrame(() => {
+      if (mounted) setIsVisible(true)
+    })
     const timer = setTimeout(() => {
+      if (!mounted) return
       setIsVisible(false)
       setTimeout(() => onRemove(toast.id), 300)
     }, 3000)
-    return () => clearTimeout(timer)
+    return () => {
+      mounted = false
+      cancelAnimationFrame(raf)
+      clearTimeout(timer)
+    }
   }, [toast.id, onRemove])
 
   const bgColor = {
@@ -51,19 +65,4 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
       {toast.message}
     </div>
   )
-}
-
-export function useToast() {
-  const [toasts, setToasts] = useState<Toast[]>([])
-
-  const addToast = (message: string, type: ToastType = 'info') => {
-    const id = crypto.randomUUID()
-    setToasts((prev) => [...prev, { id, message, type }])
-  }
-
-  const removeToast = (id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id))
-  }
-
-  return { toasts, addToast, removeToast }
 }

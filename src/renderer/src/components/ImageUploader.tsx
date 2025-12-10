@@ -1,23 +1,35 @@
-import { useId, ChangeEvent, useState, useEffect } from 'react'
+import { useId, ChangeEvent, useState, useEffect, JSX } from 'react'
 
 interface ImageUploaderProps {
   value?: string
   onChange: (value: string | undefined) => void
 }
 
-export default function ImageUploader({ value, onChange }: ImageUploaderProps) {
+export default function ImageUploader({ value, onChange }: ImageUploaderProps): JSX.Element {
   const id = useId()
   const [imageDataUrl, setImageDataUrl] = useState<string | undefined>()
 
   useEffect(() => {
+    let mounted = true
     if (value) {
-      window.api.asset.load(value).then(setImageDataUrl).catch(console.error)
+      window.api.asset
+        .load(value)
+        .then((d) => {
+          if (mounted) setImageDataUrl(d)
+        })
+        .catch(console.error)
     } else {
-      setImageDataUrl(undefined)
+      // décaler pour éviter setState synchrones dans l'effet
+      setTimeout(() => {
+        if (mounted) setImageDataUrl(undefined)
+      }, 0)
+    }
+    return () => {
+      mounted = false
     }
   }, [value])
 
-  const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = e.target.files?.[0]
     if (file) {
       const reader = new FileReader()
@@ -34,7 +46,7 @@ export default function ImageUploader({ value, onChange }: ImageUploaderProps) {
     }
   }
 
-  const handleDelete = async () => {
+  const handleDelete = async (): Promise<void> => {
     if (value) {
       try {
         await window.api.asset.delete(value)

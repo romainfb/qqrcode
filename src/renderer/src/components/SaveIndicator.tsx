@@ -1,11 +1,12 @@
 import type { SaveStatus } from '@renderer/types'
 import { SAVE_STATUS_LABELS } from '@renderer/types'
+import { JSX } from 'react'
 
 interface SaveIndicatorProps {
   status: SaveStatus
 }
 
-export default function SaveIndicator({ status }: SaveIndicatorProps) {
+export default function SaveIndicator({ status }: SaveIndicatorProps): JSX.Element | null {
   if (status === 'idle') return null
 
   return (
