@@ -11,10 +11,10 @@
 |-------|-------------|--------|---------|
 | Phase 1: Infrastructure | 7 | ✅ Terminé | 1/1 |
 | Phase 2: DRY | 7 | ✅ Terminé | 3/3 |
-| Phase 3: Naming | 8 | ⏳ À faire | 0/2 |
+| Phase 3: Naming | 6 | ✅ Terminé | 1/1 |
 | Phase 4: Optimisations | 5 | ⏳ À faire | 0/2 |
 | Phase 5: Sécurité & TS | 4 | ⏳ À faire | 0/1 |
-| **TOTAL** | **31** | **14/31 ✅** | **4/9** |
+| **TOTAL** | **31** | **20/31 ✅** | **5/8** |
 
 ---
 
@@ -103,37 +103,34 @@
 
 ---
 
-## Phase 3: Naming ⏳
+## Phase 3: Naming ✅
 
-### Commit 1: Handlers & IPC
-**Commit**: `refactor(naming): standardize handler prefixes and IPC channel names`
+### Commit 1: Naming complète ✅
+**Commit**: `refactor(naming): standardize IPC channels, fix boolean prefixes and generic variable names`
 
-- [ ] **NAMING-001** - Prefixes handlers
-  - [ ] Vérifier convention on* vs handle*
+- [x] **NAMING-001** - Prefixes handlers
+  - [x] Convention vérifiée: on* pour props callbacks (OK)
 
-- [ ] **NAMING-002** - IPC channels
-  - [ ] asset:save-qr → asset:saveQR
-  - [ ] asset:save-center-image → asset:saveCenterImage
-  - [ ] Mettre à jour preload/index.ts
+- [x] **NAMING-002** - IPC channels
+  - [x] asset:save-qr → asset:saveQR
+  - [x] asset:save-center-image → asset:saveCenterImage
+  - [x] Mettre à jour preload/index.ts
 
-### Commit 2: Variables
-**Commit**: `refactor(naming): fix boolean prefixes, acronyms, and generic variable names`
+- [x] **NAMING-003** - Acronymes
+  - [x] Déjà standardisés (QR, URL corrects)
 
-- [ ] **NAMING-003** - Acronymes
-  - [ ] Standardiser QR, URL
+- [x] **NAMING-005** - Booléens
+  - [x] Toast.tsx: mounted → isMounted
 
-- [ ] **NAMING-005** - Booléens
-  - [ ] Toast.tsx: mounted → isMounted
+- [x] **NAMING-007** - Variable "data"
+  - [x] App.tsx: data → qrContent
 
-- [ ] **NAMING-007** - Variable "data"
-  - [ ] App.tsx: data → qrContent
-
-- [ ] **NAMING-008** - Variable "d"
-  - [ ] Corrigé via useAssetLoader
+- [x] **NAMING-008** - Variable "d"
+  - [x] ✅ Déjà corrigé via useAssetLoader (Phase 2)
 
 ### Tests Phase 3
-- [ ] `npm run typecheck` passe
-- [ ] `npm run test` passe
+- [x] `npm run typecheck` passe
+- [x] `npm run test` passe
 
 ---
 

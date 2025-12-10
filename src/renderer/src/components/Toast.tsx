@@ -29,18 +29,18 @@ function ToastItem({
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    let mounted = true
+    let isMounted = true
     // use requestAnimationFrame to avoid triggering setState synchronously in effect
     const raf = requestAnimationFrame(() => {
-      if (mounted) setIsVisible(true)
+      if (isMounted) setIsVisible(true)
     })
     const timer = setTimeout(() => {
-      if (!mounted) return
+      if (!isMounted) return
       setIsVisible(false)
       setTimeout(() => onRemove(toast.id), TOAST_FADE_OUT_MS)
     }, TOAST_AUTO_HIDE_MS)
     return () => {
-      mounted = false
+      isMounted = false
       cancelAnimationFrame(raf)
       clearTimeout(timer)
     }

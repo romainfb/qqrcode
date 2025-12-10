@@ -1,4 +1,4 @@
-import { app, BrowserWindow, nativeImage, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, nativeImage } from 'electron'
 import { join } from 'path'
 import { SimpleStore } from './store'
 import { AssetManager } from './AssetManager'
@@ -31,11 +31,11 @@ ipcMain.handle('history:clear', () => {
   return []
 })
 
-ipcMain.handle('asset:save-qr', (_event, dataUrl: string, id: string) => {
+ipcMain.handle('asset:saveQR', (_event, dataUrl: string, id: string) => {
   return assetManager.saveQRCode(dataUrl, id)
 })
 
-ipcMain.handle('asset:save-center-image', (_event, dataUrl: string) => {
+ipcMain.handle('asset:saveCenterImage', (_event, dataUrl: string) => {
   return assetManager.saveCenterImage(dataUrl)
 })
 

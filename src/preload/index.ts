@@ -10,9 +10,9 @@ contextBridge.exposeInMainWorld('api', {
   },
   asset: {
     saveQRCode: (dataUrl: string, id: string): Promise<string> =>
-      ipcRenderer.invoke('asset:save-qr', dataUrl, id),
+      ipcRenderer.invoke('asset:saveQR', dataUrl, id),
     saveCenterImage: (dataUrl: string): Promise<string> =>
-      ipcRenderer.invoke('asset:save-center-image', dataUrl),
+      ipcRenderer.invoke('asset:saveCenterImage', dataUrl),
     load: (path: string): Promise<string> => ipcRenderer.invoke('asset:load', path),
     delete: (path: string): Promise<void> => ipcRenderer.invoke('asset:delete', path),
     cleanup: (): Promise<void> => ipcRenderer.invoke('asset:cleanup')

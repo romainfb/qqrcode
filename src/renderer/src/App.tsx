@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect, JSX } from 'react'
+import { JSX, useCallback, useEffect, useRef, useState } from 'react'
 import InputArea from '@renderer/components/InputArea'
 import Canvas from '@renderer/components/Canvas'
 import ControlPanel from '@renderer/components/ControlPanel'
@@ -6,12 +6,12 @@ import HistoryPanel from '@renderer/components/HistoryPanel'
 import SaveIndicator from '@renderer/components/SaveIndicator'
 import { ToastContainer } from '@renderer/components/Toast'
 import { useToast } from './hooks/useToast'
-import { useQRSettings, useQRHistory } from './hooks'
+import { useQRHistory, useQRSettings } from './hooks'
 import type { QRCodeData } from '@renderer/types'
 
 function App(): JSX.Element {
   const [input, setInput] = useState('')
-  const [data, setData] = useState('QQRCode')
+  const [qrContent, setQrContent] = useState('QQRCode')
   const { settings, setSettings, updateSetting } = useQRSettings()
   const { history, selectedId, saveStatus, saveNew, autoSave, selectFromHistory, clearHistory } =
     useQRHistory()
@@ -22,15 +22,15 @@ function App(): JSX.Element {
   // Auto-save quand les settings ou data changent
   useEffect(() => {
     if (getDataUrlRef.current) {
-      autoSave(data, settings, selectedId, getDataUrlRef.current)
+      autoSave(qrContent, settings, selectedId, getDataUrlRef.current)
     }
-  }, [data, settings, selectedId, autoSave])
+  }, [qrContent, settings, selectedId, autoSave])
 
   const onGenerate = async (): Promise<void> => {
     const trimmed = input.trim()
     if (!trimmed) return
 
-    setData(trimmed)
+    setQrContent(trimmed)
 
     // Attendre le prochain render pour que le QR soit généré
     setTimeout(async (): Promise<void> => {
@@ -52,7 +52,7 @@ function App(): JSX.Element {
 
   const onSelectHistory = (item: QRCodeData): void => {
     const selected = selectFromHistory(item)
-    setData(selected.data)
+    setQrContent(selected.data)
     setSettings(selected.settings)
     setInput(selected.data)
   }
@@ -73,7 +73,7 @@ function App(): JSX.Element {
           onClear={clearHistory}
         />
         <div className="flex-1 relative">
-          <Canvas data={data} settings={settings} onQRReady={onQRReady} />
+          <Canvas data={qrContent} settings={settings} onQRReady={onQRReady} />
           <SaveIndicator status={saveStatus} />
         </div>
         <ControlPanel settings={settings} onSettingChange={updateSetting} />
