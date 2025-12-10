@@ -14,7 +14,10 @@ function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback) {
 
   useEffect(() => {
     if (settings.centerImagePath) {
-      window.api.asset.load(settings.centerImagePath).then(setCenterImageDataUrl).catch(console.error)
+      window.api.asset
+        .load(settings.centerImagePath)
+        .then(setCenterImageDataUrl)
+        .catch(console.error)
     } else {
       setCenterImageDataUrl(undefined)
     }
@@ -64,7 +67,10 @@ function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback) {
   }, [data, settings, centerImageDataUrl, onQRReady])
 
   return (
-    <section className="w-full h-full flex items-center justify-center" style={{ backgroundColor: settings.backgroundColor }}>
+    <section
+      className="w-full h-full flex items-center justify-center"
+      style={{ backgroundColor: settings.backgroundColor }}
+    >
       <div ref={containerRef} id="qr-container" />
     </section>
   )

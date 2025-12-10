@@ -67,4 +67,3 @@ export function useToast() {
 
   return { toasts, addToast, removeToast }
 }
-
