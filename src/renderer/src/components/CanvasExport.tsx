@@ -1,18 +1,18 @@
 import type { CornersStyle } from '@renderer/types'
 import { JSX } from 'react'
-import { copyQrToClipboard, exportPNG, printQr } from '@renderer/lib/canvasExport'
 
 interface CanvasExportProps {
   backgroundColor: string
   cornersStyle: CornersStyle
+  onExportPNG: () => Promise<void>
+  onCopy: () => Promise<void>
+  onPrint: () => void
 }
 
-function CanvasExport({ backgroundColor, cornersStyle }: CanvasExportProps): JSX.Element {
-  const options = { backgroundColor, cornersStyle }
-
-  const onExportPNG = (): Promise<void> => exportPNG(options)
-  const onCopy = (): Promise<void> => copyQrToClipboard(options)
-  const onPrint = (): void => printQr(options)
+function CanvasExport({ backgroundColor, cornersStyle, onExportPNG, onCopy, onPrint }: CanvasExportProps): JSX.Element {
+  // UI only: options are displayed for information or potential future use; logic is injected via props callbacks
+  void backgroundColor
+  void cornersStyle
 
   const buttonClassName =
     'flex-1 min-w-0 px-3 py-2 text-sm rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-100 hover:bg-zinc-700 transition-colors whitespace-nowrap overflow-hidden text-ellipsis'

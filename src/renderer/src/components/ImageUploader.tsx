@@ -1,5 +1,6 @@
 import { useId, ChangeEvent, JSX } from 'react'
 import { useAssetLoader } from '@renderer/hooks/useAssetLoader'
+import { useServices } from '../contexts/ServicesContext'
 
 interface ImageUploaderProps {
   value?: string
@@ -9,6 +10,7 @@ interface ImageUploaderProps {
 export default function ImageUploader({ value, onChange }: ImageUploaderProps): JSX.Element {
   const id = useId()
   const imageDataUrl = useAssetLoader(value)
+  const { assetService } = useServices()
 
   const handleChange = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = e.target.files?.[0]
@@ -17,7 +19,7 @@ export default function ImageUploader({ value, onChange }: ImageUploaderProps): 
       reader.onload = async () => {
         const dataUrl = reader.result as string
         try {
-          const path = await window.api.asset.saveCenterImage(dataUrl)
+          const path = await assetService.saveCenterImage(dataUrl)
           onChange(path)
         } catch (error) {
           console.error('Failed to save image:', error)
@@ -30,7 +32,7 @@ export default function ImageUploader({ value, onChange }: ImageUploaderProps): 
   const handleDelete = async (): Promise<void> => {
     if (value) {
       try {
-        await window.api.asset.delete(value)
+        await assetService.delete(value)
       } catch (error) {
         console.error('Failed to delete image:', error)
       }

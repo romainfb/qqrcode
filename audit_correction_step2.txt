@@ -6,11 +6,14 @@ LES NOMS CORRESPONDENT A CEUX DU FICHIER AUDIT_CODE_REVIEW.MD
 
 
 
-SOLID-001: Single Responsibility Principle (SRP) - App.tsx
-SOLID-002: SRP - useQRHistory.ts fait trop de choses
-SOLID-003: Open/Closed Principle - main/index.ts
-SOLID-005: Dependency Inversion - Couplage fort avec window.api
-SOLID-007: SRP - CanvasExport mélange UI et logique
+SOLID-001: Single Responsibility Principle (SRP) - App.tsx OK
+SOLID-002: SRP - useQRHistory.ts fait trop de choses OK
+
+SOLID-003: Open/Closed Principle - main/index.ts OK
+SOLID-005: Dependency Inversion - Couplage fort avec window.api OK
+SOLID-007: SRP - CanvasExport mélange UI et logique OK
+
+
 ARCH-001: Pas de layer service côté renderer
 OPTI-001: setTimeout(fn, 0) anti-pattern
 TS-003: Interface vs Type inconsistance

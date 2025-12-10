@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react'
 import type { QRCodeData } from '@renderer/types'
+import { useServices } from '../contexts/ServicesContext'
 
 export function useHistoryPersistence(
   setHistory: React.Dispatch<React.SetStateAction<QRCodeData[]>>
@@ -11,29 +12,31 @@ export function useHistoryPersistence(
   saveQRCodeAsset: (dataUrl: string, id: string) => Promise<string>
   cleanupAssets: () => Promise<void>
 } {
+  const { historyService, assetService } = useServices()
+
   const loadHistory = useCallback(() => {
-    window.api.history.get().then(setHistory)
-  }, [setHistory])
+    historyService.get().then(setHistory)
+  }, [setHistory, historyService])
 
   const addHistoryItem = useCallback(async (item: QRCodeData): Promise<QRCodeData[]> => {
-    return await window.api.history.add(item)
-  }, [])
+    return await historyService.add(item)
+  }, [historyService])
 
   const updateHistoryItem = useCallback(async (item: QRCodeData): Promise<QRCodeData[]> => {
-    return await window.api.history.update(item)
-  }, [])
+    return await historyService.update(item)
+  }, [historyService])
 
   const clearHistory = useCallback(async (): Promise<void> => {
-    await window.api.history.clear()
-  }, [])
+    await historyService.clear()
+  }, [historyService])
 
   const saveQRCodeAsset = useCallback(async (dataUrl: string, id: string): Promise<string> => {
-    return window.api.asset.saveQRCode(dataUrl, id)
-  }, [])
+    return assetService.saveQRCode(dataUrl, id)
+  }, [assetService])
 
   const cleanupAssets = useCallback(async (): Promise<void> => {
-    await window.api.asset.cleanup()
-  }, [])
+    await assetService.cleanup()
+  }, [assetService])
 
   useEffect(() => {
     loadHistory()

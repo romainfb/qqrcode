@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useServices } from '../contexts/ServicesContext'
 
 /**
  * Hook to load an asset from the main process
@@ -8,11 +9,13 @@ import { useEffect, useState } from 'react'
 export function useAssetLoader(assetPath: string | undefined): string | undefined {
   const [dataUrl, setDataUrl] = useState<string | undefined>()
 
+  const { assetService } = useServices()
+
   useEffect(() => {
     let raf: number | undefined
 
     if (assetPath) {
-      window.api.asset
+      assetService
         .load(assetPath)
         .then((url) => setDataUrl(url))
         .catch(console.error)
@@ -27,7 +30,7 @@ export function useAssetLoader(assetPath: string | undefined): string | undefine
         cancelAnimationFrame(raf)
       }
     }
-  }, [assetPath])
+  }, [assetPath, assetService])
 
   return dataUrl
 }
