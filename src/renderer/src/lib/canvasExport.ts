@@ -8,7 +8,11 @@ export interface ComposeOptions {
 const DEFAULT_SELECTOR = '#qr-container canvas'
 
 export const getQrCanvas = (selector: string = DEFAULT_SELECTOR): HTMLCanvasElement | null => {
-  return document.querySelector(selector) as HTMLCanvasElement | null
+  const element = document.querySelector(selector)
+  if (element instanceof HTMLCanvasElement) {
+    return element
+  }
+  return null
 }
 
 export const downloadBlob = (blob: Blob, filename: string): void => {
@@ -23,11 +27,15 @@ export const composeWithBackground = (
   { backgroundColor, cornersStyle }: ComposeOptions
 ): HTMLCanvasElement => {
   const { width: w, height: h } = qrCanvas
-  const out = Object.assign(document.createElement('canvas'), {
-    width: w,
-    height: h
-  }) as HTMLCanvasElement
-  const ctx = out.getContext('2d')!
+  const out = document.createElement('canvas')
+  out.width = w
+  out.height = h
+
+  const ctx = out.getContext('2d')
+  if (!ctx) {
+    throw new Error('Failed to get 2d context from canvas')
+  }
+
   const radius = cornersStyle === 'rounded' ? Math.round(Math.min(w, h) * 0.08) : 0
 
   ctx.beginPath()

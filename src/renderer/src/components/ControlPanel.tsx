@@ -1,3 +1,4 @@
+import { JSX, useMemo } from 'react'
 import type { QRSettings, CornersStyle, DotStyle, ECC } from '@renderer/types'
 import {
   CORNERS_STYLES,
@@ -10,8 +11,8 @@ import CanvasExport from '@renderer/components/CanvasExport'
 import SelectField from '@renderer/components/SelectField'
 import ColorPicker from '@renderer/components/ColorPicker'
 import ImageUploader from '@renderer/components/ImageUploader'
+import { useCanvasExport } from '@renderer/hooks/useCanvasExport'
 
-// Labels pour ECC (identiques aux valeurs)
 const ECC_LABELS: Record<ECC, string> = { L: 'L', M: 'M', Q: 'Q', H: 'H' }
 
 interface ControlPanelProps {
@@ -23,6 +24,12 @@ export default function ControlPanel({
   settings,
   onSettingChange
 }: ControlPanelProps): JSX.Element {
+  const exportOptions = useMemo(
+    () => ({ backgroundColor: settings.backgroundColor, cornersStyle: settings.cornersStyle }),
+    [settings.backgroundColor, settings.cornersStyle]
+  )
+  const { onExportPNG, onCopy, onPrint } = useCanvasExport(exportOptions)
+
   return (
     <section className="w-80 h-full bg-black border-l border-zinc-800 p-4 flex flex-col gap-6">
       <SelectField<CornersStyle>
@@ -71,6 +78,9 @@ export default function ControlPanel({
       <CanvasExport
         backgroundColor={settings.backgroundColor}
         cornersStyle={settings.cornersStyle}
+        onExportPNG={onExportPNG}
+        onCopy={onCopy}
+        onPrint={onPrint}
       />
     </section>
   )

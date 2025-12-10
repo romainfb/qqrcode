@@ -1,6 +1,9 @@
-import { JSX, useEffect, useRef, useState } from 'react'
+import { JSX, useEffect, useRef } from 'react'
 import type { CanvasProps } from '@renderer/types'
-import { QR_SIZE } from '../../../shared/types'
+import { QR_SIZE } from '@shared/types'
+import { CENTER_IMAGE_MARGIN, CENTER_IMAGE_SIZE_RATIO } from '@shared/constants'
+import { useAssetLoader } from '@renderer/hooks/useAssetLoader'
+import { blobToDataUrl } from '@shared/dataUrlUtils'
 import QRCodeStyling, { type Options } from 'qr-code-styling'
 
 interface CanvasPropsWithCallback extends CanvasProps {
@@ -10,24 +13,31 @@ interface CanvasPropsWithCallback extends CanvasProps {
 function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback): JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null)
   const qrRef = useRef<QRCodeStyling | null>(null)
-  const [centerImageDataUrl, setCenterImageDataUrl] = useState<string | undefined>()
+  const centerImageDataUrl = useAssetLoader(settings.centerImagePath)
 
+  // Initialize QR code instance once
   useEffect(() => {
-    if (settings.centerImagePath) {
-      window.api.asset
-        .load(settings.centerImagePath)
-        .then((d) => setTimeout(() => setCenterImageDataUrl(d), 0))
-        .catch(console.error)
-    } else {
-      // Eviter setState synchrone dans l'effet
-      setTimeout(() => setCenterImageDataUrl(undefined), 0)
-    }
-  }, [settings.centerImagePath])
+    if (!containerRef.current || qrRef.current) return
 
+    const qr = new QRCodeStyling({
+      width: QR_SIZE,
+      height: QR_SIZE,
+      data: 'QQRCode'
+    })
+    qrRef.current = qr
+    qr.append(containerRef.current)
+
+    onQRReady?.(async () => {
+      if (!qrRef.current) return ''
+      const blob = await qrRef.current.getRawData('png')
+      if (!(blob instanceof Blob)) return ''
+      return blobToDataUrl(blob)
+    })
+  }, [onQRReady])
+
+  // Update QR code when data or settings change
   useEffect(() => {
-    if (!containerRef.current) return
-
-    containerRef.current.innerHTML = ''
+    if (!qrRef.current) return
 
     const qrConfig: Partial<Options> = {
       width: QR_SIZE,
@@ -48,24 +58,15 @@ function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback): JSX.Ele
 
     if (centerImageDataUrl) {
       qrConfig.image = centerImageDataUrl
-      qrConfig.imageOptions = { hideBackgroundDots: true, imageSize: 0.4, margin: 8 }
+      qrConfig.imageOptions = {
+        hideBackgroundDots: true,
+        imageSize: CENTER_IMAGE_SIZE_RATIO,
+        margin: CENTER_IMAGE_MARGIN
+      }
     }
 
-    const qr = new QRCodeStyling(qrConfig)
-    qrRef.current = qr
-    qr.append(containerRef.current)
-
-    onQRReady?.(async () => {
-      if (!qrRef.current) return ''
-      const blob = await qrRef.current.getRawData('png')
-      if (!(blob instanceof Blob)) return ''
-      return new Promise<string>((resolve) => {
-        const reader = new FileReader()
-        reader.onloadend = () => resolve(reader.result as string)
-        reader.readAsDataURL(blob)
-      })
-    })
-  }, [data, settings, centerImageDataUrl, onQRReady])
+    qrRef.current.update(qrConfig)
+  }, [data, settings, centerImageDataUrl])
 
   return (
     <section

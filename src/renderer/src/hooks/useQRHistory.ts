@@ -1,10 +1,13 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import type { QRCodeData, QRSettings } from '@renderer/types'
+import { useCallback, useRef } from 'react'
+import type { QRCodeData, QRSettings, SaveStatus } from '@renderer/types'
+import { useHistoryState } from './useHistoryState'
+import { useHistoryPersistence } from './useHistoryPersistence'
+import { useAutoSave } from './useAutoSave'
 
 export function useQRHistory(): {
   history: QRCodeData[]
   selectedId: string | null
-  saveStatus: 'idle' | 'saving' | 'saved'
+  saveStatus: SaveStatus
   saveNew: (data: string, settings: QRSettings, getDataUrl: () => Promise<string>) => Promise<void>
   autoSave: (
     data: string,
@@ -15,15 +18,30 @@ export function useQRHistory(): {
   selectFromHistory: (item: QRCodeData) => QRCodeData
   clearHistory: () => Promise<void>
 } {
-  const [history, setHistory] = useState<QRCodeData[]>([])
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // State management
+  const { history, setHistory, selectedId, setSelectedId, saveStatus, setSaveStatus } =
+    useHistoryState()
+
+  // Persistence layer (IPC calls)
+  const {
+    addHistoryItem,
+    updateHistoryItem,
+    clearHistory: clearHistoryIPC,
+    saveQRCodeAsset,
+    cleanupAssets
+  } = useHistoryPersistence(setHistory)
+
+  // Cache of last saved key to avoid redundant saves
   const lastSavedRef = useRef<string | null>(null)
 
-  useEffect(() => {
-    window.api.history.get().then(setHistory)
-  }, [])
+  // Debounced auto-save orchestrator
+  const { autoSave } = useAutoSave({
+    setHistory,
+    setSaveStatus,
+    lastSavedRef,
+    saveQRCodeAsset,
+    updateHistoryItem
+  })
 
   const saveNew = useCallback(
     async (
@@ -35,7 +53,7 @@ export function useQRHistory(): {
       if (!canvasDataUrl) return
 
       const newId = crypto.randomUUID()
-      const imagePath = await window.api.asset.saveQRCode(canvasDataUrl, newId)
+      const imagePath = await saveQRCodeAsset(canvasDataUrl, newId)
 
       const newItem: QRCodeData = {
         id: newId,
@@ -44,83 +62,34 @@ export function useQRHistory(): {
         settings: { ...settings },
         createdAt: Date.now()
       }
-      const newHistory = await window.api.history.add(newItem)
+      const newHistory = await addHistoryItem(newItem)
       setHistory(newHistory)
       setSelectedId(newItem.id)
       lastSavedRef.current = JSON.stringify({ settings, data, selectedId: newItem.id })
     },
-    []
+    [addHistoryItem, saveQRCodeAsset, setHistory, setSelectedId]
   )
 
-  const autoSave = useCallback(
-    (
-      data: string,
-      settings: QRSettings,
-      currentSelectedId: string | null,
-      getDataUrl: () => Promise<string>
-    ): void => {
-      if (!currentSelectedId) return
-
-      const currentKey = JSON.stringify({ settings, data, selectedId: currentSelectedId })
-      if (lastSavedRef.current === currentKey) return
-
-      if (debounceRef.current) clearTimeout(debounceRef.current)
-      setSaveStatus('saving')
-
-      debounceRef.current = setTimeout(async () => {
-        try {
-          const canvasDataUrl = await getDataUrl()
-          if (!canvasDataUrl || !currentSelectedId) {
-            setSaveStatus('idle')
-            return
-          }
-
-          const imagePath = await window.api.asset.saveQRCode(canvasDataUrl, currentSelectedId)
-
-          const updatedItem: QRCodeData = {
-            id: currentSelectedId,
-            data,
-            imagePath,
-            settings: { ...settings },
-            createdAt: Date.now()
-          }
-          const newHistory = await window.api.history.update(updatedItem)
-          setHistory(newHistory)
-          lastSavedRef.current = currentKey
-          setSaveStatus('saved')
-          setTimeout(() => setSaveStatus('idle'), 2000)
-        } catch (error) {
-          console.error('Auto-save failed:', error)
-          setSaveStatus('idle')
-        }
-      }, 1000)
+  const selectFromHistory = useCallback(
+    (item: QRCodeData): QRCodeData => {
+      lastSavedRef.current = JSON.stringify({
+        settings: item.settings,
+        data: item.data,
+        selectedId: item.id
+      })
+      setSelectedId(item.id)
+      return item
     },
-    []
+    [setSelectedId]
   )
-
-  const selectFromHistory = useCallback((item: QRCodeData): QRCodeData => {
-    lastSavedRef.current = JSON.stringify({
-      settings: item.settings,
-      data: item.data,
-      selectedId: item.id
-    })
-    setSelectedId(item.id)
-    return item
-  }, [])
 
   const clearHistory = useCallback(async (): Promise<void> => {
-    await window.api.history.clear()
-    await window.api.asset.cleanup()
+    await clearHistoryIPC()
+    await cleanupAssets()
     setHistory([])
     setSelectedId(null)
     lastSavedRef.current = null
-  }, [])
-
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current)
-    }
-  }, [])
+  }, [cleanupAssets, clearHistoryIPC, setHistory, setSelectedId])
 
   return {
     history,

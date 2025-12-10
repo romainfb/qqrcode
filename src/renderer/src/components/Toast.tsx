@@ -1,12 +1,8 @@
 import { JSX, useEffect, useState } from 'react'
+import type { Toast, ToastType } from '@shared/types'
+import { TOAST_AUTO_HIDE_MS, TOAST_FADE_OUT_MS } from '@shared/constants'
 
-export interface Toast {
-  id: string
-  message: string
-  type: 'success' | 'error' | 'info'
-}
-
-export type ToastType = 'success' | 'error' | 'info'
+export type { Toast, ToastType }
 
 interface ToastContainerProps {
   toasts: Toast[]
@@ -33,18 +29,17 @@ function ToastItem({
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    let mounted = true
-    // use requestAnimationFrame to avoid triggering setState synchronously in effect
+    let isMounted = true
     const raf = requestAnimationFrame(() => {
-      if (mounted) setIsVisible(true)
+      if (isMounted) setIsVisible(true)
     })
     const timer = setTimeout(() => {
-      if (!mounted) return
+      if (!isMounted) return
       setIsVisible(false)
-      setTimeout(() => onRemove(toast.id), 300)
-    }, 3000)
+      setTimeout(() => onRemove(toast.id), TOAST_FADE_OUT_MS)
+    }, TOAST_AUTO_HIDE_MS)
     return () => {
-      mounted = false
+      isMounted = false
       cancelAnimationFrame(raf)
       clearTimeout(timer)
     }

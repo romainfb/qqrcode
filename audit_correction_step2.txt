@@ -1,0 +1,36 @@
+
+
+Tu vas donc traiter UNIQUEMENT les cas listés ci dessous;
+LES NOMS CORRESPONDENT A CEUX DU FICHIER AUDIT_CODE_REVIEW.MD
+À FAIRE UNE CORRECTION PAR COMMIT
+
+
+
+SOLID-001: Single Responsibility Principle (SRP) - App.tsx OK
+SOLID-002: SRP - useQRHistory.ts fait trop de choses OK
+
+SOLID-003: Open/Closed Principle - main/index.ts OK
+SOLID-005: Dependency Inversion - Couplage fort avec window.api OK
+SOLID-007: SRP - CanvasExport mélange UI et logique OK
+
+
+ARCH-001: Pas de layer service côté renderer
+OPTI-001: setTimeout(fn, 0) anti-pattern
+TS-003: Interface vs Type inconsistance
+TS-006: Props interface dans le fichier composant
+DEP-001: qr-code-styling en dev ET prod dependencies
+DEP-002: Author/Homepage non mis à jour
+DEP-003: Description générique
+
+
+
+
+
+
+
+LATER NE PAS FAIRE AU STEP 2
+ARCH-005: Absence de gestion d'erreur centralisée
+
+
+
+

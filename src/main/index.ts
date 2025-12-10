@@ -1,64 +1,14 @@
-import { app, BrowserWindow, nativeImage, ipcMain } from 'electron'
+import { app, BrowserWindow, nativeImage } from 'electron'
 import { join } from 'path'
-import SimpleStore from './store'
+import { SimpleStore } from './store'
 import { AssetManager } from './assetManager'
-import { QRCodeData } from '../shared/types'
+import { registerHandlers } from './ipc/registerHandlers'
+import { createHistoryHandlers } from './ipc/historyHandlers'
+import { createAssetHandlers } from './ipc/assetHandlers'
+import { createMaintenanceHandlers } from './ipc/maintenanceHandlers'
 
 let store: SimpleStore
 let assetManager: AssetManager
-
-ipcMain.handle('history:get', () => {
-  return store.get('history')
-})
-
-ipcMain.handle('history:add', (_event, item: QRCodeData) => {
-  const history = store.get('history')
-  const newHistory = [item, ...history].slice(0, 3)
-  store.set('history', newHistory)
-  return newHistory
-})
-
-ipcMain.handle('history:update', (_event, item: QRCodeData) => {
-  const history = store.get('history')
-  const newHistory = history.map((h) => (h.id === item.id ? item : h))
-  store.set('history', newHistory)
-  return newHistory
-})
-
-ipcMain.handle('history:clear', () => {
-  store.set('history', [])
-  return []
-})
-
-ipcMain.handle('asset:save-qr', (_event, dataUrl: string, id: string) => {
-  return assetManager.saveQRCode(dataUrl, id)
-})
-
-ipcMain.handle('asset:save-center-image', (_event, dataUrl: string) => {
-  return assetManager.saveCenterImage(dataUrl)
-})
-
-ipcMain.handle('asset:load', (_event, path: string) => {
-  return assetManager.loadImage(path)
-})
-
-ipcMain.handle('asset:delete', (_event, path: string) => {
-  assetManager.deleteImage(path)
-})
-
-ipcMain.handle('asset:cleanup', () => {
-  const history = store.get('history')
-  const usedPaths: string[] = []
-
-  for (const item of history) {
-    usedPaths.push(item.imagePath)
-    if (item.settings.centerImagePath) {
-      usedPaths.push(item.settings.centerImagePath)
-    }
-  }
-
-  assetManager.cleanup(usedPaths)
-})
 
 const iconPath = join(__dirname, '../../resources/icon.png')
 const iconImage = nativeImage.createFromPath(iconPath)
@@ -98,22 +48,27 @@ function createWindow(): void {
 
   mainWindow.webContents.on('will-navigate', (event, navigationUrl) => {
     const parsedUrl = new URL(navigationUrl)
-    if (parsedUrl.origin !== 'http://localhost:5173' && parsedUrl.origin !== 'file://') {
+    if (parsedUrl.origin !== 'file://') {
       event.preventDefault()
     }
   })
 
-  if (process.env.NODE_ENV === 'development') {
-    mainWindow.loadURL('http://localhost:5173')
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
-  }
+  mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   const userDataPath = app.getPath('userData')
   store = new SimpleStore()
+  await store.init()
   assetManager = new AssetManager(userDataPath)
+
+  // Register IPC handlers via registry (OCP)
+  registerHandlers({
+    ...createHistoryHandlers(store),
+    ...createAssetHandlers(assetManager),
+    ...createMaintenanceHandlers(store, assetManager)
+  })
+
   createWindow()
 
   app.on('activate', function () {
