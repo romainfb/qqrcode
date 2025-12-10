@@ -1,6 +1,7 @@
 import { join } from 'path'
 import { existsSync, mkdirSync, writeFileSync, readFileSync, unlinkSync, readdirSync } from 'fs'
 import { randomUUID } from 'crypto'
+import { dataUrlToBuffer, bufferToDataUrl } from '@shared/dataUrlUtils'
 
 export class AssetManager {
   private readonly assetsPath: string
@@ -26,24 +27,8 @@ export class AssetManager {
     }
   }
 
-  private dataUrlToBuffer(dataUrl: string): { buffer: Buffer; extension: string } {
-    const matches = dataUrl.match(/^data:image\/(\w+);base64,(.+)$/)
-    if (!matches) {
-      throw new Error('Invalid data URL format')
-    }
-    const extension = matches[1]
-    const base64Data = matches[2]
-    const buffer = Buffer.from(base64Data, 'base64')
-    return { buffer, extension }
-  }
-
-  private bufferToDataUrl(buffer: Buffer, extension: string): string {
-    const base64 = buffer.toString('base64')
-    return `data:image/${extension};base64,${base64}`
-  }
-
   saveQRCode(dataUrl: string, id: string): string {
-    const { buffer, extension } = this.dataUrlToBuffer(dataUrl)
+    const { buffer, extension } = dataUrlToBuffer(dataUrl)
     const filename = `${id}.${extension}`
     const filePath = join(this.qrCodesPath, filename)
     writeFileSync(filePath, buffer)
@@ -51,7 +36,7 @@ export class AssetManager {
   }
 
   saveCenterImage(dataUrl: string): string {
-    const { buffer, extension } = this.dataUrlToBuffer(dataUrl)
+    const { buffer, extension } = dataUrlToBuffer(dataUrl)
     const filename = `${randomUUID()}.${extension}`
     const filePath = join(this.centerImagesPath, filename)
     writeFileSync(filePath, buffer)
@@ -65,7 +50,7 @@ export class AssetManager {
     }
     const buffer = readFileSync(filePath)
     const extension = relativePath.split('.').pop() || 'png'
-    return this.bufferToDataUrl(buffer, extension)
+    return bufferToDataUrl(buffer, extension)
   }
 
   deleteImage(relativePath: string): void {

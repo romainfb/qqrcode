@@ -10,11 +10,11 @@
 | Phase | Corrections | Statut | Commits |
 |-------|-------------|--------|---------|
 | Phase 1: Infrastructure | 7 | ✅ Terminé | 1/1 |
-| Phase 2: DRY | 7 | ⏳ À faire | 0/3 |
+| Phase 2: DRY | 7 | ✅ Terminé | 3/3 |
 | Phase 3: Naming | 8 | ⏳ À faire | 0/2 |
 | Phase 4: Optimisations | 5 | ⏳ À faire | 0/2 |
 | Phase 5: Sécurité & TS | 4 | ⏳ À faire | 0/1 |
-| **TOTAL** | **31** | **7/31 ✅** | **1/9** |
+| **TOTAL** | **31** | **14/31 ✅** | **4/9** |
 
 ---
 
@@ -61,45 +61,45 @@
 
 ---
 
-## Phase 2: DRY ⏳
+## Phase 2: DRY ✅
 
-### Commit 1: Extract magic numbers
+### Commit 1: Extract magic numbers ✅
 **Commit**: `refactor(dry): extract magic numbers to constants`
 
-- [ ] **NAMING-006** - Extraire magic numbers
-  - [ ] main/index.ts
-  - [ ] hooks/useQRHistory.ts
-  - [ ] components/Canvas.tsx
-  - [ ] components/HistoryPanel.tsx
-  - [ ] components/Toast.tsx
+- [x] **NAMING-006** - Extraire magic numbers
+  - [x] main/index.ts
+  - [x] hooks/useQRHistory.ts
+  - [x] components/Canvas.tsx
+  - [x] components/HistoryPanel.tsx
+  - [x] components/Toast.tsx
 
-### Commit 2: Hook useAssetLoader
+### Commit 2: Hook useAssetLoader ✅
 **Commit**: `refactor(dry): create useAssetLoader hook to eliminate duplication`
 
-- [ ] **DRY-002** - Pattern chargement image
-  - [ ] Créer hooks/useAssetLoader.ts
-  - [ ] Refactorer Canvas.tsx
-  - [ ] Refactorer HistoryPanel.tsx
-  - [ ] Refactorer ImageUploader.tsx
-  - [ ] Mettre à jour hooks/index.ts
+- [x] **DRY-002** - Pattern chargement image
+  - [x] Créer hooks/useAssetLoader.ts
+  - [x] Refactorer Canvas.tsx
+  - [x] Refactorer HistoryPanel.tsx
+  - [x] Refactorer ImageUploader.tsx
+  - [x] Mettre à jour hooks/index.ts
 
-### Commit 3: Utilitaires conversion
+### Commit 3: Utilitaires conversion ✅
 **Commit**: `refactor(dry+arch): extract data URL utilities, fix SEC-003 regex`
 
-- [ ] **DRY-004** - Conversion DataURL ↔ Buffer
-  - [ ] Créer shared/dataUrlUtils.ts
-  - [ ] Refactorer AssetManager.ts
+- [x] **DRY-004** - Conversion DataURL ↔ Buffer
+  - [x] Créer shared/dataUrlUtils.ts
+  - [x] Refactorer AssetManager.ts
 
-- [ ] **ARCH-004** - Logique métier hors composants
-  - [ ] Utiliser blobToDataUrl dans Canvas.tsx
+- [x] **ARCH-004** - Logique métier hors composants
+  - [x] Utiliser blobToDataUrl dans Canvas.tsx
 
-- [ ] **SEC-003** - Regex sécurisé
-  - [ ] Whitelist formats images
+- [x] **SEC-003** - Regex sécurisé
+  - [x] Whitelist formats images
 
 ### Tests Phase 2
-- [ ] `npm run typecheck` passe
-- [ ] `npm run test` passe
-- [ ] Vérifier chargement images
+- [x] `npm run typecheck` passe
+- [x] `npm run test` passe
+- [x] Vérifier chargement images
 
 ---
 

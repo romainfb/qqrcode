@@ -3,6 +3,7 @@ import type { CanvasProps } from '@renderer/types'
 import { QR_SIZE } from '@shared/types'
 import { CENTER_IMAGE_SIZE_RATIO, CENTER_IMAGE_MARGIN } from '@shared/constants'
 import { useAssetLoader } from '@renderer/hooks/useAssetLoader'
+import { blobToDataUrl } from '@shared/dataUrlUtils'
 import QRCodeStyling, { type Options } from 'qr-code-styling'
 
 interface CanvasPropsWithCallback extends CanvasProps {
@@ -53,11 +54,7 @@ function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback): JSX.Ele
       if (!qrRef.current) return ''
       const blob = await qrRef.current.getRawData('png')
       if (!(blob instanceof Blob)) return ''
-      return new Promise<string>((resolve) => {
-        const reader = new FileReader()
-        reader.onloadend = () => resolve(reader.result as string)
-        reader.readAsDataURL(blob)
-      })
+      return blobToDataUrl(blob)
     })
   }, [data, settings, centerImageDataUrl, onQRReady])
 
