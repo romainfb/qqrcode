@@ -30,7 +30,7 @@ QRCode Generator – Open source Electron App
 
 ## 🎉 Preview
 
-![QQrCode Screenshot](./screenshot.png) <!-- Replace with your screenshot if needed -->
+![QQrCode Screenshot](https://media.discordapp.net/attachments/1080432225989951508/1448252164639035433/image.png?ex=693a956f&is=693943ef&hm=ec9283ffdc9615d47a54eeecc89b231d11083d68ca109a5cf55cddc682b82b44&=&format=webp&quality=lossless&width=2522&height=1766) <!-- Replace with your screenshot if needed -->
 
 ---
 
