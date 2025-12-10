@@ -1,7 +1,8 @@
 # Suivi Corrections Audit - QQRCode
 
 **Date de début:** 10 Décembre 2025
-**Statut global:** 🟡 EN COURS
+**Date de fin:** 10 Décembre 2025
+**Statut global:** ✅ TERMINÉ
 
 ---
 
@@ -13,8 +14,8 @@
 | Phase 2: DRY | 7 | ✅ Terminé | 3/3 |
 | Phase 3: Naming | 6 | ✅ Terminé | 1/1 |
 | Phase 4: Optimisations | 3 | ✅ Terminé | 2/2 |
-| Phase 5: Sécurité & TS | 4 | ⏳ À faire | 0/1 |
-| **TOTAL** | **31** | **23/31 ✅** | **7/8** |
+| Phase 5: Sécurité & TS | 4 | ✅ Terminé | 1/1 |
+| **TOTAL** | **31** | **27/31 ✅** | **8/8** |
 
 ---
 
@@ -166,28 +167,30 @@
 
 ---
 
-## Phase 5: Sécurité & TS ⏳
+## Phase 5: Sécurité & TS ✅
 
 **Commit**: `fix(sec+ts): add path traversal protection, remove unsafe type assertions`
 
-- [ ] **SEC-003** - Regex sécurisé
-  - [ ] ✅ Fait en Phase 2
+- [x] **SEC-003** - Regex sécurisé
+  - [x] ✅ Déjà fait en Phase 2 (whitelist formats images)
 
-- [ ] **SEC-004** - Path traversal
-  - [ ] AssetManager.loadImage: validation chemin
-  - [ ] Test avec ../../etc/passwd
+- [x] **SEC-004** - Path traversal
+  - [x] AssetManager.loadImage: validation avec resolve() et startsWith()
+  - [x] AssetManager.deleteImage: même validation
+  - [x] Test BHV-13 ajouté avec tentatives ../../etc/passwd
 
-- [ ] **TS-002** - Type assertions
-  - [ ] CanvasExport.ts: supprimer casts
-  - [ ] Vérifier ctx null
+- [x] **TS-002** - Type assertions
+  - [x] CanvasExport.ts: supprimé cast `as HTMLCanvasElement`
+  - [x] getQrCanvas: instanceof check au lieu de cast
+  - [x] composeWithBackground: null check sur ctx au lieu de `!`
 
-- [ ] **TS-007** - Enum pattern
-  - [ ] ⚠️ Optionnel - garder actuel
+- [x] **TS-007** - Enum pattern
+  - [x] ⚠️ Pattern actuel acceptable, pas de changement nécessaire
 
 ### Tests Phase 5
-- [ ] `npm run typecheck` passe
-- [ ] `npm run test` passe
-- [ ] Test sécurité path traversal
+- [x] `npm run typecheck` passe ✅
+- [x] `npm run test` passe (13/13) ✅
+- [x] Test sécurité path traversal fonctionne ✅
 
 ---
 

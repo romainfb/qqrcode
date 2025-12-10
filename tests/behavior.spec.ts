@@ -341,4 +341,17 @@ describe('Business Flow: Asset Management', () => {
     expect(loadedDataUrl).toContain('data:image/png;base64,')
     expect(loadedDataUrl.length).toBeGreaterThan(50)
   })
+
+  it('BHV-13: Prevent path traversal attacks', () => {
+    // Attempt path traversal attacks
+    expect(() => assetManager.loadImage('../../etc/passwd')).toThrow(
+      'Invalid path: attempting to access files outside assets directory'
+    )
+    expect(() => assetManager.loadImage('../../../etc/passwd')).toThrow(
+      'Invalid path: attempting to access files outside assets directory'
+    )
+    expect(() => assetManager.deleteImage('../../etc/passwd')).toThrow(
+      'Invalid path: attempting to access files outside assets directory'
+    )
+  })
 })

@@ -1,7 +1,7 @@
-import { join } from 'path'
-import { existsSync, mkdirSync, writeFileSync, readFileSync, unlinkSync, readdirSync } from 'fs'
+import { join, resolve } from 'path'
+import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs'
 import { randomUUID } from 'crypto'
-import { dataUrlToBuffer, bufferToDataUrl } from '@shared/dataUrlUtils'
+import { bufferToDataUrl, dataUrlToBuffer } from '@shared/dataUrlUtils'
 
 export class AssetManager {
   private readonly assetsPath: string
@@ -13,18 +13,6 @@ export class AssetManager {
     this.qrCodesPath = join(this.assetsPath, 'qr-codes')
     this.centerImagesPath = join(this.assetsPath, 'center-images')
     this.ensureDirectories()
-  }
-
-  private ensureDirectories(): void {
-    if (!existsSync(this.assetsPath)) {
-      mkdirSync(this.assetsPath, { recursive: true })
-    }
-    if (!existsSync(this.qrCodesPath)) {
-      mkdirSync(this.qrCodesPath, { recursive: true })
-    }
-    if (!existsSync(this.centerImagesPath)) {
-      mkdirSync(this.centerImagesPath, { recursive: true })
-    }
   }
 
   saveQRCode(dataUrl: string, id: string): string {
@@ -45,18 +33,34 @@ export class AssetManager {
 
   loadImage(relativePath: string): string {
     const filePath = join(this.assetsPath, relativePath)
-    if (!existsSync(filePath)) {
+    const resolvedPath = resolve(filePath)
+    const resolvedAssetsPath = resolve(this.assetsPath)
+
+    // Prevent path traversal attacks
+    if (!resolvedPath.startsWith(resolvedAssetsPath)) {
+      throw new Error(`Invalid path: attempting to access files outside assets directory`)
+    }
+
+    if (!existsSync(resolvedPath)) {
       throw new Error(`Image not found: ${relativePath}`)
     }
-    const buffer = readFileSync(filePath)
+    const buffer = readFileSync(resolvedPath)
     const extension = relativePath.split('.').pop() || 'png'
     return bufferToDataUrl(buffer, extension)
   }
 
   deleteImage(relativePath: string): void {
     const filePath = join(this.assetsPath, relativePath)
-    if (existsSync(filePath)) {
-      unlinkSync(filePath)
+    const resolvedPath = resolve(filePath)
+    const resolvedAssetsPath = resolve(this.assetsPath)
+
+    // Prevent path traversal attacks
+    if (!resolvedPath.startsWith(resolvedAssetsPath)) {
+      throw new Error(`Invalid path: attempting to access files outside assets directory`)
+    }
+
+    if (existsSync(resolvedPath)) {
+      unlinkSync(resolvedPath)
     }
   }
 
@@ -77,6 +81,18 @@ export class AssetManager {
       if (!usedSet.has(relativePath)) {
         this.deleteImage(relativePath)
       }
+    }
+  }
+
+  private ensureDirectories(): void {
+    if (!existsSync(this.assetsPath)) {
+      mkdirSync(this.assetsPath, { recursive: true })
+    }
+    if (!existsSync(this.qrCodesPath)) {
+      mkdirSync(this.qrCodesPath, { recursive: true })
+    }
+    if (!existsSync(this.centerImagesPath)) {
+      mkdirSync(this.centerImagesPath, { recursive: true })
     }
   }
 }
