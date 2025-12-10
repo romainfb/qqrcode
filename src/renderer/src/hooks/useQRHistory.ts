@@ -1,11 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import type { QRCodeData, QRSettings } from '@renderer/types'
 
-interface UseQRHistoryOptions {
-  getDataUrl: () => Promise<string>
-}
-
-export function useQRHistory({ getDataUrl }: UseQRHistoryOptions) {
+export function useQRHistory() {
   const [history, setHistory] = useState<QRCodeData[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
@@ -16,14 +12,17 @@ export function useQRHistory({ getDataUrl }: UseQRHistoryOptions) {
     window.api.history.get().then(setHistory)
   }, [])
 
-  const saveNew = useCallback(async (data: string, settings: QRSettings) => {
-    const dataUrl = await getDataUrl()
-    if (!dataUrl) return
+  const saveNew = useCallback(async (data: string, settings: QRSettings, getDataUrl: () => Promise<string>) => {
+    const canvasDataUrl = await getDataUrl()
+    if (!canvasDataUrl) return
+
+    const newId = crypto.randomUUID()
+    const imagePath = await window.api.asset.saveQRCode(canvasDataUrl, newId)
 
     const newItem: QRCodeData = {
-      id: crypto.randomUUID(),
+      id: newId,
       data,
-      dataUrl,
+      imagePath,
       settings: { ...settings },
       createdAt: Date.now()
     }
@@ -31,12 +30,17 @@ export function useQRHistory({ getDataUrl }: UseQRHistoryOptions) {
     setHistory(newHistory)
     setSelectedId(newItem.id)
     lastSavedRef.current = JSON.stringify({ settings, data, selectedId: newItem.id })
-  }, [getDataUrl])
+  }, [])
 
-  const autoSave = useCallback((data: string, settings: QRSettings) => {
-    if (!selectedId) return
+  const autoSave = useCallback((
+    data: string,
+    settings: QRSettings,
+    currentSelectedId: string | null,
+    getDataUrl: () => Promise<string>
+  ) => {
+    if (!currentSelectedId) return
 
-    const currentKey = JSON.stringify({ settings, data, selectedId })
+    const currentKey = JSON.stringify({ settings, data, selectedId: currentSelectedId })
     if (lastSavedRef.current === currentKey) return
 
     if (debounceRef.current) clearTimeout(debounceRef.current)
@@ -44,13 +48,18 @@ export function useQRHistory({ getDataUrl }: UseQRHistoryOptions) {
 
     debounceRef.current = setTimeout(async () => {
       try {
-        const dataUrl = await getDataUrl()
-        if (!dataUrl || !selectedId) return
+        const canvasDataUrl = await getDataUrl()
+        if (!canvasDataUrl || !currentSelectedId) {
+          setSaveStatus('idle')
+          return
+        }
+
+        const imagePath = await window.api.asset.saveQRCode(canvasDataUrl, currentSelectedId)
 
         const updatedItem: QRCodeData = {
-          id: selectedId,
+          id: currentSelectedId,
           data,
-          dataUrl,
+          imagePath,
           settings: { ...settings },
           createdAt: Date.now()
         }
@@ -64,12 +73,20 @@ export function useQRHistory({ getDataUrl }: UseQRHistoryOptions) {
         setSaveStatus('idle')
       }
     }, 1000)
-  }, [selectedId, getDataUrl])
+  }, [])
 
   const selectFromHistory = useCallback((item: QRCodeData) => {
     lastSavedRef.current = JSON.stringify({ settings: item.settings, data: item.data, selectedId: item.id })
     setSelectedId(item.id)
     return item
+  }, [])
+
+  const clearHistory = useCallback(async () => {
+    await window.api.history.clear()
+    await window.api.asset.cleanup()
+    setHistory([])
+    setSelectedId(null)
+    lastSavedRef.current = null
   }, [])
 
   useEffect(() => {
@@ -84,7 +101,7 @@ export function useQRHistory({ getDataUrl }: UseQRHistoryOptions) {
     saveStatus,
     saveNew,
     autoSave,
-    selectFromHistory
+    selectFromHistory,
+    clearHistory
   }
 }
-

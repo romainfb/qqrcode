@@ -1,68 +1,27 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import type { QRCodeData, SaveStatus } from './types'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import InputArea from '@renderer/components/InputArea'
 import Canvas from '@renderer/components/Canvas'
 import ControlPanel from '@renderer/components/ControlPanel'
 import HistoryPanel from '@renderer/components/HistoryPanel'
 import SaveIndicator from '@renderer/components/SaveIndicator'
 import { ToastContainer, useToast } from '@renderer/components/Toast'
-import { useQRSettings } from './hooks'
+import { useQRSettings, useQRHistory } from './hooks'
 
 function App() {
   const [input, setInput] = useState('')
   const [data, setData] = useState('QQRCode')
   const { settings, setSettings, updateSetting } = useQRSettings()
-  const [history, setHistory] = useState<QRCodeData[]>([])
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const { history, selectedId, saveStatus, saveNew, autoSave, selectFromHistory, clearHistory } = useQRHistory()
   const { toasts, addToast, removeToast } = useToast()
 
   const getDataUrlRef = useRef<(() => Promise<string>) | null>(null)
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const lastSavedSettingsRef = useRef<string | null>(null)
 
+  // Auto-save quand les settings ou data changent
   useEffect(() => {
-    window.api.history.get().then(setHistory)
-  }, [])
-
-  // Auto-save effect
-  useEffect(() => {
-    if (!selectedId) return
-
-    const currentSettingsKey = JSON.stringify({ settings, data, selectedId })
-    if (lastSavedSettingsRef.current === currentSettingsKey) return
-
-    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
-    setSaveStatus('saving')
-
-    debounceTimerRef.current = setTimeout(async () => {
-      try {
-        const dataUrl = await getDataUrlRef.current?.()
-        if (dataUrl && selectedId) {
-          const imagePath = await window.api.asset.saveQRCode(dataUrl, selectedId)
-          const updatedItem: QRCodeData = {
-            id: selectedId,
-            data,
-            imagePath,
-            settings: { ...settings },
-            createdAt: Date.now()
-          }
-          const newHistory = await window.api.history.update(updatedItem)
-          setHistory(newHistory)
-          lastSavedSettingsRef.current = currentSettingsKey
-          setSaveStatus('saved')
-          setTimeout(() => setSaveStatus('idle'), 2000)
-        }
-      } catch (error) {
-        console.error('Failed to auto-save QR code:', error)
-        setSaveStatus('idle')
-      }
-    }, 1000)
-
-    return () => {
-      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
+    if (getDataUrlRef.current) {
+      autoSave(data, settings, selectedId, getDataUrlRef.current)
     }
-  }, [settings, selectedId, data])
+  }, [data, settings, selectedId, autoSave])
 
   const onGenerate = async () => {
     const trimmed = input.trim()
@@ -73,21 +32,8 @@ function App() {
     // Attendre le prochain render pour que le QR soit généré
     setTimeout(async () => {
       try {
-        const dataUrl = await getDataUrlRef.current?.()
-        if (dataUrl) {
-          const newId = crypto.randomUUID()
-          const imagePath = await window.api.asset.saveQRCode(dataUrl, newId)
-          const newItem: QRCodeData = {
-            id: newId,
-            data: trimmed,
-            imagePath,
-            settings: { ...settings },
-            createdAt: Date.now()
-          }
-          const newHistory = await window.api.history.add(newItem)
-          setHistory(newHistory)
-          setSelectedId(newItem.id)
-          lastSavedSettingsRef.current = JSON.stringify({ settings, data: trimmed, selectedId: newItem.id })
+        if (getDataUrlRef.current) {
+          await saveNew(trimmed, settings, getDataUrlRef.current)
           addToast('QR code généré !', 'success')
         }
       } catch (error) {
@@ -101,12 +47,11 @@ function App() {
     getDataUrlRef.current = getDataUrl
   }, [])
 
-  const onSelectHistory = (item: QRCodeData) => {
-    lastSavedSettingsRef.current = JSON.stringify({ settings: item.settings, data: item.data, selectedId: item.id })
-    setData(item.data)
-    setSettings(item.settings)
-    setInput(item.data)
-    setSelectedId(item.id)
+  const onSelectHistory = (item) => {
+    const selected = selectFromHistory(item)
+    setData(selected.data)
+    setSettings(selected.settings)
+    setInput(selected.data)
   }
 
   return (
@@ -118,7 +63,7 @@ function App() {
         disabled={!input.trim()}
       />
       <div className="flex w-full h-full flex-1">
-        <HistoryPanel history={history} onSelect={onSelectHistory} selectedId={selectedId} />
+        <HistoryPanel history={history} onSelect={onSelectHistory} selectedId={selectedId} onClear={clearHistory} />
         <div className="flex-1 relative">
           <Canvas data={data} settings={settings} onQRReady={onQRReady} />
           <SaveIndicator status={saveStatus} />
