@@ -74,4 +74,3 @@ export default function ImageUploader({ value, onChange }: ImageUploaderProps) {
     </div>
   )
 }
-

@@ -11,7 +11,8 @@ function App() {
   const [input, setInput] = useState('')
   const [data, setData] = useState('QQRCode')
   const { settings, setSettings, updateSetting } = useQRSettings()
-  const { history, selectedId, saveStatus, saveNew, autoSave, selectFromHistory, clearHistory } = useQRHistory()
+  const { history, selectedId, saveStatus, saveNew, autoSave, selectFromHistory, clearHistory } =
+    useQRHistory()
   const { toasts, addToast, removeToast } = useToast()
 
   const getDataUrlRef = useRef<(() => Promise<string>) | null>(null)
@@ -63,7 +64,12 @@ function App() {
         disabled={!input.trim()}
       />
       <div className="flex w-full h-full flex-1">
-        <HistoryPanel history={history} onSelect={onSelectHistory} selectedId={selectedId} onClear={clearHistory} />
+        <HistoryPanel
+          history={history}
+          onSelect={onSelectHistory}
+          selectedId={selectedId}
+          onClear={clearHistory}
+        />
         <div className="flex-1 relative">
           <Canvas data={data} settings={settings} onQRReady={onQRReady} />
           <SaveIndicator status={saveStatus} />

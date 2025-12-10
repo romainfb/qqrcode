@@ -24,4 +24,3 @@ export default function ColorPicker({ label, value, onChange }: ColorPickerProps
     </div>
   )
 }
-
