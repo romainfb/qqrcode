@@ -3,6 +3,16 @@
   "version": "1.0.0",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
+  "build": {
+    "appId": "fr.romainfb.qqrcode",
+    "productName": "QQRCode - Générateur de QR Code",
+    "win": {
+      "icon": "resources/icon.ico"
+    },
+    "mac": {
+      "icon": "resources/icon.icns"
+    }
+  },
   "author": "example.com",
   "homepage": "https://electron-vite.org",
   "scripts": {
@@ -11,14 +21,17 @@
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
-    "build": "npm run typecheck && electron-vite build",
+    "build": "npm run test && npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
-    "build:mac": "electron-vite build && electron-builder --mac",
-    "build:linux": "electron-vite build && electron-builder --linux"
+    "build:mac": "npm run test && npm run typecheck && electron-vite build && electron-builder --mac",
+    "build:linux": "npm run test && npm run typecheck && electron-vite build && electron-builder --linux"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
@@ -29,6 +42,8 @@
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
     "@electron-toolkit/eslint-config-ts": "^3.1.0",
     "@electron-toolkit/tsconfig": "^2.0.0",
+    "@tailwindcss/vite": "^4.1.17",
+    "@types/mock-fs": "^4.13.4",
     "@types/node": "^22.19.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
@@ -40,13 +55,15 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
+    "jsdom": "^27.3.0",
+    "mock-fs": "^5.5.0",
     "prettier": "^3.7.4",
+    "qr-code-styling": "^1.7.1",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "tailwindcss": "^4.1.17",
-    "@tailwindcss/vite": "^4.1.17",
-    "qr-code-styling": "^1.7.1",
     "typescript": "^5.9.3",
-    "vite": "^7.2.6"
+    "vite": "^7.2.6",
+    "vitest": "^4.0.15"
   }
 }
