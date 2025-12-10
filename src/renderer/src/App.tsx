@@ -1,62 +1,29 @@
-import { JSX, useCallback, useEffect, useRef, useState } from 'react'
+import { JSX } from 'react'
 import InputArea from '@renderer/components/InputArea'
 import Canvas from '@renderer/components/Canvas'
 import ControlPanel from '@renderer/components/ControlPanel'
 import HistoryPanel from '@renderer/components/HistoryPanel'
 import SaveIndicator from '@renderer/components/SaveIndicator'
 import { ToastContainer } from '@renderer/components/Toast'
-import { useToast } from './hooks/useToast'
-import { useQRHistory, useQRSettings } from './hooks'
-import type { QRCodeData } from '@renderer/types'
+import { useAppController } from './hooks/useAppController'
 
 function App(): JSX.Element {
-  const [input, setInput] = useState('')
-  const [qrContent, setQrContent] = useState('QQRCode')
-  const { settings, setSettings, updateSetting } = useQRSettings()
-  const { history, selectedId, saveStatus, saveNew, autoSave, selectFromHistory, clearHistory } =
-    useQRHistory()
-  const { toasts, addToast, removeToast } = useToast()
-
-  const getDataUrlRef = useRef<(() => Promise<string>) | null>(null)
-
-  useEffect(() => {
-    if (getDataUrlRef.current) {
-      autoSave(qrContent, settings, selectedId, getDataUrlRef.current)
-    }
-  }, [qrContent, settings, selectedId, autoSave])
-
-  const onGenerate = async (): Promise<void> => {
-    const trimmed = input.trim()
-    if (!trimmed) return
-
-    setQrContent(trimmed)
-
-    setTimeout(async (): Promise<void> => {
-      try {
-        if (getDataUrlRef.current) {
-          await saveNew(trimmed, settings, getDataUrlRef.current)
-          addToast('QR code généré !', 'success')
-        }
-      } catch (error) {
-        console.error('Failed to save QR code to history:', error)
-        addToast('Erreur lors de la génération', 'error')
-      }
-    }, 100)
-  }
-
-  const onQRReady = useCallback((getDataUrl: () => Promise<string>): void => {
-    getDataUrlRef.current = getDataUrl
-  }, [])
-
-  const onSelectHistory = useCallback(
-    (item: QRCodeData): void => {
-      const selected = selectFromHistory(item)
-      setQrContent(selected.data)
-      setSettings(selected.settings)
-      setInput(selected.data)
-    },
-    [selectFromHistory, setSettings]
-  )
+  const {
+    input,
+    setInput,
+    qrContent,
+    onQRReady,
+    settings,
+    updateSetting,
+    history,
+    selectedId,
+    saveStatus,
+    onSelectHistory,
+    clearHistory,
+    toasts,
+    removeToast,
+    onGenerate
+  } = useAppController()
 
   return (
     <section className="h-screen w-screen bg-zinc-800 flex flex-col overflow-hidden">
