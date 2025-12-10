@@ -9,7 +9,13 @@ interface CanvasExportProps {
   onPrint: () => void
 }
 
-function CanvasExport({ backgroundColor, cornersStyle, onExportPNG, onCopy, onPrint }: CanvasExportProps): JSX.Element {
+function CanvasExport({
+  backgroundColor,
+  cornersStyle,
+  onExportPNG,
+  onCopy,
+  onPrint
+}: CanvasExportProps): JSX.Element {
   // UI only: options are displayed for information or potential future use; logic is injected via props callbacks
   void backgroundColor
   void cornersStyle

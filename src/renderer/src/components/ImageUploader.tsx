@@ -1,6 +1,6 @@
 import { useId, ChangeEvent, JSX } from 'react'
 import { useAssetLoader } from '@renderer/hooks/useAssetLoader'
-import { useServices } from '../contexts/ServicesContext'
+import { useServices } from '../hooks/useServices'
 
 interface ImageUploaderProps {
   value?: string

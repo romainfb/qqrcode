@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useServices } from '../contexts/ServicesContext'
+import { useServices } from '../hooks/useServices'
 
 /**
  * Hook to load an asset from the main process

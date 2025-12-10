@@ -23,8 +23,13 @@ export function useQRHistory(): {
     useHistoryState()
 
   // Persistence layer (IPC calls)
-  const { addHistoryItem, updateHistoryItem, clearHistory: clearHistoryIPC, saveQRCodeAsset, cleanupAssets } =
-    useHistoryPersistence(setHistory)
+  const {
+    addHistoryItem,
+    updateHistoryItem,
+    clearHistory: clearHistoryIPC,
+    saveQRCodeAsset,
+    cleanupAssets
+  } = useHistoryPersistence(setHistory)
 
   // Cache of last saved key to avoid redundant saves
   const lastSavedRef = useRef<string | null>(null)
@@ -65,15 +70,18 @@ export function useQRHistory(): {
     [addHistoryItem, saveQRCodeAsset, setHistory, setSelectedId]
   )
 
-  const selectFromHistory = useCallback((item: QRCodeData): QRCodeData => {
-    lastSavedRef.current = JSON.stringify({
-      settings: item.settings,
-      data: item.data,
-      selectedId: item.id
-    })
-    setSelectedId(item.id)
-    return item
-  }, [setSelectedId])
+  const selectFromHistory = useCallback(
+    (item: QRCodeData): QRCodeData => {
+      lastSavedRef.current = JSON.stringify({
+        settings: item.settings,
+        data: item.data,
+        selectedId: item.id
+      })
+      setSelectedId(item.id)
+      return item
+    },
+    [setSelectedId]
+  )
 
   const clearHistory = useCallback(async (): Promise<void> => {
     await clearHistoryIPC()

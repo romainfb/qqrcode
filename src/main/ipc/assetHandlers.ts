@@ -1,7 +1,9 @@
 import type { ParametersOfHandle } from './types'
 import type { AssetManager } from '../assetManager'
 
-export function createAssetHandlers(assetManager: AssetManager): Record<string, ParametersOfHandle[1]> {
+export function createAssetHandlers(
+  assetManager: AssetManager
+): Record<string, ParametersOfHandle[1]> {
   return {
     'asset:saveQR': (_event, dataUrl: string, id: string) => {
       return assetManager.saveQRCode(dataUrl, id)
