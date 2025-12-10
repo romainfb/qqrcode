@@ -1,6 +1,12 @@
 import type { InputAreaProps } from '@renderer/types'
+import { JSX } from 'react'
 
-export default function InputArea({ value, onChange, onGenerate, disabled }: InputAreaProps) {
+export default function InputArea({
+  value,
+  onChange,
+  onGenerate,
+  disabled
+}: InputAreaProps): JSX.Element {
   return (
     <section className="w-full bg-black border-b border-zinc-800">
       <div className="flex gap-4 p-4">

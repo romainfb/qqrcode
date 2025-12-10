@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { JSX, useId } from 'react'
 
 interface ColorPickerProps {
   label: string
@@ -6,7 +6,7 @@ interface ColorPickerProps {
   onChange: (value: string) => void
 }
 
-export default function ColorPicker({ label, value, onChange }: ColorPickerProps) {
+export default function ColorPicker({ label, value, onChange }: ColorPickerProps): JSX.Element {
   const id = useId()
 
   return (
@@ -24,4 +24,3 @@ export default function ColorPicker({ label, value, onChange }: ColorPickerProps
     </div>
   )
 }
-

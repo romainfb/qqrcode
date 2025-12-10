@@ -1,17 +1,20 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, JSX } from 'react'
 import InputArea from '@renderer/components/InputArea'
 import Canvas from '@renderer/components/Canvas'
 import ControlPanel from '@renderer/components/ControlPanel'
 import HistoryPanel from '@renderer/components/HistoryPanel'
 import SaveIndicator from '@renderer/components/SaveIndicator'
-import { ToastContainer, useToast } from '@renderer/components/Toast'
+import { ToastContainer } from '@renderer/components/Toast'
+import { useToast } from './hooks/useToast'
 import { useQRSettings, useQRHistory } from './hooks'
+import type { QRCodeData } from '@renderer/types'
 
-function App() {
+function App(): JSX.Element {
   const [input, setInput] = useState('')
   const [data, setData] = useState('QQRCode')
   const { settings, setSettings, updateSetting } = useQRSettings()
-  const { history, selectedId, saveStatus, saveNew, autoSave, selectFromHistory, clearHistory } = useQRHistory()
+  const { history, selectedId, saveStatus, saveNew, autoSave, selectFromHistory, clearHistory } =
+    useQRHistory()
   const { toasts, addToast, removeToast } = useToast()
 
   const getDataUrlRef = useRef<(() => Promise<string>) | null>(null)
@@ -23,14 +26,14 @@ function App() {
     }
   }, [data, settings, selectedId, autoSave])
 
-  const onGenerate = async () => {
+  const onGenerate = async (): Promise<void> => {
     const trimmed = input.trim()
     if (!trimmed) return
 
     setData(trimmed)
 
     // Attendre le prochain render pour que le QR soit généré
-    setTimeout(async () => {
+    setTimeout(async (): Promise<void> => {
       try {
         if (getDataUrlRef.current) {
           await saveNew(trimmed, settings, getDataUrlRef.current)
@@ -43,11 +46,11 @@ function App() {
     }, 100)
   }
 
-  const onQRReady = useCallback((getDataUrl: () => Promise<string>) => {
+  const onQRReady = useCallback((getDataUrl: () => Promise<string>): void => {
     getDataUrlRef.current = getDataUrl
   }, [])
 
-  const onSelectHistory = (item) => {
+  const onSelectHistory = (item: QRCodeData): void => {
     const selected = selectFromHistory(item)
     setData(selected.data)
     setSettings(selected.settings)
@@ -63,7 +66,12 @@ function App() {
         disabled={!input.trim()}
       />
       <div className="flex w-full h-full flex-1">
-        <HistoryPanel history={history} onSelect={onSelectHistory} selectedId={selectedId} onClear={clearHistory} />
+        <HistoryPanel
+          history={history}
+          onSelect={onSelectHistory}
+          selectedId={selectedId}
+          onClear={clearHistory}
+        />
         <div className="flex-1 relative">
           <Canvas data={data} settings={settings} onQRReady={onQRReady} />
           <SaveIndicator status={saveStatus} />

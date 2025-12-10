@@ -1,4 +1,11 @@
-export type { DotStyle, ECC, CornersStyle, QRSettings, QRCodeData, SaveStatus } from '../../shared/types'
+export type {
+  DotStyle,
+  ECC,
+  CornersStyle,
+  QRSettings,
+  QRCodeData,
+  SaveStatus
+} from '../../shared/types'
 export {
   DOT_STYLES,
   DOT_STYLE_LABELS,

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { JSX, useEffect, useRef, useState } from 'react'
 import type { CanvasProps } from '@renderer/types'
 import { QR_SIZE } from '../../../shared/types'
 import QRCodeStyling, { type Options } from 'qr-code-styling'
@@ -7,16 +7,20 @@ interface CanvasPropsWithCallback extends CanvasProps {
   onQRReady?: (getDataUrl: () => Promise<string>) => void
 }
 
-function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback) {
+function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback): JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null)
   const qrRef = useRef<QRCodeStyling | null>(null)
   const [centerImageDataUrl, setCenterImageDataUrl] = useState<string | undefined>()
 
   useEffect(() => {
     if (settings.centerImagePath) {
-      window.api.asset.load(settings.centerImagePath).then(setCenterImageDataUrl).catch(console.error)
+      window.api.asset
+        .load(settings.centerImagePath)
+        .then((d) => setTimeout(() => setCenterImageDataUrl(d), 0))
+        .catch(console.error)
     } else {
-      setCenterImageDataUrl(undefined)
+      // Eviter setState synchrone dans l'effet
+      setTimeout(() => setCenterImageDataUrl(undefined), 0)
     }
   }, [settings.centerImagePath])
 
@@ -64,7 +68,10 @@ function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback) {
   }, [data, settings, centerImageDataUrl, onQRReady])
 
   return (
-    <section className="w-full h-full flex items-center justify-center" style={{ backgroundColor: settings.backgroundColor }}>
+    <section
+      className="w-full h-full flex items-center justify-center"
+      style={{ backgroundColor: settings.backgroundColor }}
+    >
       <div ref={containerRef} id="qr-container" />
     </section>
   )

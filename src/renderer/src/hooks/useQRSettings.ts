@@ -10,11 +10,16 @@ const DEFAULT_SETTINGS: QRSettings = {
   centerImagePath: undefined
 }
 
-export function useQRSettings(initial?: Partial<QRSettings>) {
+export function useQRSettings(initial?: Partial<QRSettings>): {
+  settings: QRSettings
+  setSettings: (s: QRSettings) => void
+  updateSetting: <K extends keyof QRSettings>(key: K, value: QRSettings[K]) => void
+  resetSettings: () => void
+} {
   const [settings, setSettings] = useState<QRSettings>({ ...DEFAULT_SETTINGS, ...initial })
 
   const updateSetting = useCallback(<K extends keyof QRSettings>(key: K, value: QRSettings[K]) => {
-    setSettings(s => ({ ...s, [key]: value }))
+    setSettings((s) => ({ ...s, [key]: value }))
   }, [])
 
   const resetSettings = useCallback(() => setSettings(DEFAULT_SETTINGS), [])

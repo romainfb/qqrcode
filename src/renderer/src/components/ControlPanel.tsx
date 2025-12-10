@@ -1,5 +1,11 @@
 import type { QRSettings, CornersStyle, DotStyle, ECC } from '@renderer/types'
-import { CORNERS_STYLES, CORNERS_STYLE_LABELS, DOT_STYLES, DOT_STYLE_LABELS, ECC_LEVELS } from '@renderer/types'
+import {
+  CORNERS_STYLES,
+  CORNERS_STYLE_LABELS,
+  DOT_STYLES,
+  DOT_STYLE_LABELS,
+  ECC_LEVELS
+} from '@renderer/types'
 import CanvasExport from '@renderer/components/CanvasExport'
 import SelectField from '@renderer/components/SelectField'
 import ColorPicker from '@renderer/components/ColorPicker'
@@ -13,7 +19,10 @@ interface ControlPanelProps {
   onSettingChange: <K extends keyof QRSettings>(key: K, value: QRSettings[K]) => void
 }
 
-export default function ControlPanel({ settings, onSettingChange }: ControlPanelProps) {
+export default function ControlPanel({
+  settings,
+  onSettingChange
+}: ControlPanelProps): JSX.Element {
   return (
     <section className="w-80 h-full bg-black border-l border-zinc-800 p-4 flex flex-col gap-6">
       <SelectField<CornersStyle>
@@ -59,7 +68,10 @@ export default function ControlPanel({ settings, onSettingChange }: ControlPanel
         />
       </div>
 
-      <CanvasExport backgroundColor={settings.backgroundColor} cornersStyle={settings.cornersStyle} />
+      <CanvasExport
+        backgroundColor={settings.backgroundColor}
+        cornersStyle={settings.cornersStyle}
+      />
     </section>
   )
 }
