@@ -9,55 +9,55 @@
 
 | Phase | Corrections | Statut | Commits |
 |-------|-------------|--------|---------|
-| Phase 1: Infrastructure | 7 | ⏳ À faire | 0/1 |
+| Phase 1: Infrastructure | 7 | ✅ Terminé | 1/1 |
 | Phase 2: DRY | 7 | ⏳ À faire | 0/3 |
 | Phase 3: Naming | 8 | ⏳ À faire | 0/2 |
 | Phase 4: Optimisations | 5 | ⏳ À faire | 0/2 |
 | Phase 5: Sécurité & TS | 4 | ⏳ À faire | 0/1 |
-| **TOTAL** | **31** | **0/31 ✅** | **0/9** |
+| **TOTAL** | **31** | **7/31 ✅** | **1/9** |
 
 ---
 
-## Phase 1: Infrastructure ⏳
+## Phase 1: Infrastructure ✅
 
-**Commit prévu**: `refactor: infrastructure - add @shared alias, standardize exports, centralize config`
+**Commit**: `refactor: infrastructure - add @shared alias, standardize exports, centralize config` ✅
 
 ### Corrections
 
-- [ ] **ARCH-002** - Ajouter alias @shared
-  - [ ] tsconfig.web.json
-  - [ ] tsconfig.node.json
-  - [ ] electron.vite.config.ts
+- [x] **ARCH-002** - Ajouter alias @shared
+  - [x] tsconfig.web.json
+  - [x] tsconfig.node.json
+  - [x] electron.vite.config.ts
 
-- [ ] **NAMING-004** - Renommer fichiers
-  - [ ] canvasExport.ts → CanvasExport.ts
-  - [ ] assetManager.ts → AssetManager.ts
-  - [ ] Mettre à jour imports
+- [x] **NAMING-004** - Renommer fichiers
+  - [x] canvasExport.ts → CanvasExport.ts
+  - [x] assetManager.ts → AssetManager.ts
+  - [x] Mettre à jour imports
 
-- [ ] **ARCH-008** - Standardiser exports
-  - [ ] store.ts: export { SimpleStore }
-  - [ ] Mettre à jour imports
+- [x] **ARCH-008** - Standardiser exports
+  - [x] store.ts: export { SimpleStore }
+  - [x] Mettre à jour imports
 
-- [ ] **DRY-001** - Centraliser types Toast
-  - [ ] Ajouter dans shared/types.ts
-  - [ ] Supprimer de useToast.ts
-  - [ ] Supprimer de Toast.tsx
+- [x] **DRY-001** - Centraliser types Toast
+  - [x] Ajouter dans shared/types.ts
+  - [x] Supprimer de useToast.ts
+  - [x] Supprimer de Toast.tsx
 
-- [ ] **DRY-006** - Utiliser SaveStatus
-  - [ ] useQRHistory.ts: import SaveStatus
+- [x] **DRY-006** - Utiliser SaveStatus
+  - [x] useQRHistory.ts: import SaveStatus
 
-- [ ] **DRY-007** - Exporter DEFAULT_SETTINGS
-  - [ ] Ajouter dans shared/types.ts
-  - [ ] Supprimer de useQRSettings.ts
-  - [ ] Mettre à jour tests/fixtures.ts
+- [x] **DRY-007** - Exporter DEFAULT_SETTINGS
+  - [x] Ajouter dans shared/types.ts
+  - [x] Supprimer de useQRSettings.ts
+  - [x] Mettre à jour tests/fixtures.ts
 
-- [ ] **ARCH-006** - Configuration centralisée
-  - [ ] Créer shared/constants.ts
-  - [ ] Réexporter QR_SIZE
+- [x] **ARCH-006** - Configuration centralisée
+  - [x] Créer shared/constants.ts
+  - [x] Réexporter QR_SIZE
 
 ### Tests Phase 1
-- [ ] `npm run typecheck` passe
-- [ ] `npm run test` passe
+- [x] `npm run typecheck` passe
+- [x] `npm run test` passe
 
 ---
 

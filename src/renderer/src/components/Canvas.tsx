@@ -1,6 +1,7 @@
 import { JSX, useEffect, useRef, useState } from 'react'
 import type { CanvasProps } from '@renderer/types'
-import { QR_SIZE } from '../../../shared/types'
+import { QR_SIZE } from '@shared/types'
+import { CENTER_IMAGE_SIZE_RATIO, CENTER_IMAGE_MARGIN } from '@shared/constants'
 import QRCodeStyling, { type Options } from 'qr-code-styling'
 
 interface CanvasPropsWithCallback extends CanvasProps {
@@ -48,7 +49,11 @@ function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback): JSX.Ele
 
     if (centerImageDataUrl) {
       qrConfig.image = centerImageDataUrl
-      qrConfig.imageOptions = { hideBackgroundDots: true, imageSize: 0.4, margin: 8 }
+      qrConfig.imageOptions = {
+        hideBackgroundDots: true,
+        imageSize: CENTER_IMAGE_SIZE_RATIO,
+        margin: CENTER_IMAGE_MARGIN
+      }
     }
 
     const qr = new QRCodeStyling(qrConfig)

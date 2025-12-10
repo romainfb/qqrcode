@@ -1,5 +1,6 @@
 import { JSX, useEffect, useState } from 'react'
 import type { Toast, ToastType } from '@shared/types'
+import { TOAST_AUTO_HIDE_MS, TOAST_FADE_OUT_MS } from '@shared/constants'
 
 export type { Toast, ToastType }
 
@@ -36,8 +37,8 @@ function ToastItem({
     const timer = setTimeout(() => {
       if (!mounted) return
       setIsVisible(false)
-      setTimeout(() => onRemove(toast.id), 300)
-    }, 3000)
+      setTimeout(() => onRemove(toast.id), TOAST_FADE_OUT_MS)
+    }, TOAST_AUTO_HIDE_MS)
     return () => {
       mounted = false
       cancelAnimationFrame(raf)

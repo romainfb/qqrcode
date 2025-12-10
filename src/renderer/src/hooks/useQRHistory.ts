@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import type { QRCodeData, QRSettings, SaveStatus } from '@renderer/types'
+import { AUTO_SAVE_DEBOUNCE_MS, SAVE_STATUS_RESET_DELAY_MS } from '@shared/constants'
 
 export function useQRHistory(): {
   history: QRCodeData[]
@@ -88,12 +89,12 @@ export function useQRHistory(): {
           setHistory(newHistory)
           lastSavedRef.current = currentKey
           setSaveStatus('saved')
-          setTimeout(() => setSaveStatus('idle'), 2000)
+          setTimeout(() => setSaveStatus('idle'), SAVE_STATUS_RESET_DELAY_MS)
         } catch (error) {
           console.error('Auto-save failed:', error)
           setSaveStatus('idle')
         }
-      }, 1000)
+      }, AUTO_SAVE_DEBOUNCE_MS)
     },
     []
   )

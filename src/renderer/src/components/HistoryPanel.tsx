@@ -1,5 +1,6 @@
 import { JSX, useEffect, useState } from 'react'
-import type { QRCodeData } from '../types'
+import type { QRCodeData } from '@renderer/types'
+import { HISTORY_ITEM_INDICES } from '@shared/constants'
 
 interface HistoryPanelProps {
   history: QRCodeData[]
@@ -72,7 +73,7 @@ export default function HistoryPanel({
       </h2>
 
       <div className="flex flex-col gap-3">
-        {[0, 1, 2].map((index) => {
+        {HISTORY_ITEM_INDICES.map((index) => {
           const item = history[index]
           const isSelected = item && selectedId === item.id
 

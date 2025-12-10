@@ -3,6 +3,7 @@ import { join } from 'path'
 import { SimpleStore } from './store'
 import { AssetManager } from './AssetManager'
 import { QRCodeData } from '../shared/types'
+import { MAX_HISTORY_ITEMS } from '@shared/constants'
 
 let store: SimpleStore
 let assetManager: AssetManager
@@ -13,7 +14,7 @@ ipcMain.handle('history:get', () => {
 
 ipcMain.handle('history:add', (_event, item: QRCodeData) => {
   const history = store.get('history')
-  const newHistory = [item, ...history].slice(0, 3)
+  const newHistory = [item, ...history].slice(0, MAX_HISTORY_ITEMS)
   store.set('history', newHistory)
   return newHistory
 })
