@@ -50,12 +50,15 @@ function App(): JSX.Element {
     getDataUrlRef.current = getDataUrl
   }, [])
 
-  const onSelectHistory = (item: QRCodeData): void => {
-    const selected = selectFromHistory(item)
-    setQrContent(selected.data)
-    setSettings(selected.settings)
-    setInput(selected.data)
-  }
+  const onSelectHistory = useCallback(
+    (item: QRCodeData): void => {
+      const selected = selectFromHistory(item)
+      setQrContent(selected.data)
+      setSettings(selected.settings)
+      setInput(selected.data)
+    },
+    [selectFromHistory, setSettings]
+  )
 
   return (
     <section className="h-screen w-screen bg-zinc-800 flex flex-col overflow-hidden">

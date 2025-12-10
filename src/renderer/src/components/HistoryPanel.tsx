@@ -1,4 +1,4 @@
-import { JSX } from 'react'
+import { JSX, memo } from 'react'
 import type { QRCodeData } from '@renderer/types'
 import { HISTORY_ITEM_INDICES } from '@shared/constants'
 import { useAssetLoader } from '@renderer/hooks/useAssetLoader'
@@ -17,7 +17,12 @@ interface HistoryItemProps {
   onSelect: (item: QRCodeData) => void
 }
 
-function HistoryItem({ item, index, isSelected, onSelect }: HistoryItemProps): JSX.Element {
+const HistoryItem = memo(function HistoryItem({
+  item,
+  index,
+  isSelected,
+  onSelect
+}: HistoryItemProps): JSX.Element {
   const imageDataUrl = useAssetLoader(item?.imagePath)
 
   return (
@@ -48,7 +53,7 @@ function HistoryItem({ item, index, isSelected, onSelect }: HistoryItemProps): J
       )}
     </button>
   )
-}
+})
 
 export default function HistoryPanel({
   history,

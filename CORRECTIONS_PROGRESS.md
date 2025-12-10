@@ -136,14 +136,14 @@
 
 ## Phase 4: Optimisations ⏳
 
-### Commit 1: Mémoization
+### Commit 1: Mémoization ✅
 **Commit**: `perf(opti): add memoization for callbacks and HistoryItem`
 
-- [ ] **OPTI-002** - Callbacks App.tsx
-  - [ ] useCallback pour onSelectHistory
+- [x] **OPTI-002** - Callbacks App.tsx
+  - [x] useCallback pour onSelectHistory
 
-- [ ] **OPTI-003** - Re-renders HistoryPanel
-  - [ ] React.memo(HistoryItem)
+- [x] **OPTI-003** - Re-renders HistoryPanel
+  - [x] React.memo(HistoryItem)
 
 ### Commit 2: Optimisations avancées
 **Commit**: `perf(opti): use QR update, debounce hook, async store operations`
