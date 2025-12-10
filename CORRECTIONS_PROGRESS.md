@@ -12,9 +12,9 @@
 | Phase 1: Infrastructure | 7 | ✅ Terminé | 1/1 |
 | Phase 2: DRY | 7 | ✅ Terminé | 3/3 |
 | Phase 3: Naming | 6 | ✅ Terminé | 1/1 |
-| Phase 4: Optimisations | 5 | ⏳ À faire | 0/2 |
+| Phase 4: Optimisations | 3 | ✅ Terminé | 2/2 |
 | Phase 5: Sécurité & TS | 4 | ⏳ À faire | 0/1 |
-| **TOTAL** | **31** | **20/31 ✅** | **5/8** |
+| **TOTAL** | **31** | **23/31 ✅** | **7/8** |
 
 ---
 
@@ -145,23 +145,24 @@
 - [x] **OPTI-003** - Re-renders HistoryPanel
   - [x] React.memo(HistoryItem)
 
-### Commit 2: Optimisations avancées
+### Commit 2: Optimisations avancées ✅
 **Commit**: `perf(opti): use QR update, debounce hook, async store operations`
 
-- [ ] **OPTI-004** - QRCodeStyling.update()
-  - [ ] Refactorer Canvas.tsx
+- [x] **OPTI-004** - QRCodeStyling.update()
+  - [x] Canvas.tsx: deux useEffect, un pour init, un pour update()
 
-- [ ] **OPTI-005** - Hook debounce
-  - [ ] Créer useDebouncedCallback.ts
-  - [ ] Refactorer useQRHistory.ts
+- [x] **OPTI-005** - Hook debounce
+  - [x] Créer useDebouncedCallback.ts
+  - [x] Refactorer useQRHistory.ts pour l'utiliser
 
-- [ ] **OPTI-008** - Store async
-  - [ ] Modifier store.ts (async load/save)
+- [x] **OPTI-008** - Store async
+  - [x] Modifier store.ts (async load avec readFile, sync save avec writeFileSync)
+  - [x] Ajouter init() async appelé au startup
+  - [x] Mettre à jour tests pour appeler init()
 
 ### Tests Phase 4
-- [ ] `npm run typecheck` passe
-- [ ] `npm run test` passe
-- [ ] Tester auto-save manuellement
+- [x] `npm run typecheck` passe
+- [x] `npm run test` passe ✅
 
 ---
 

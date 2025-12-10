@@ -1,7 +1,7 @@
 import { JSX, useEffect, useRef } from 'react'
 import type { CanvasProps } from '@renderer/types'
 import { QR_SIZE } from '@shared/types'
-import { CENTER_IMAGE_SIZE_RATIO, CENTER_IMAGE_MARGIN } from '@shared/constants'
+import { CENTER_IMAGE_MARGIN, CENTER_IMAGE_SIZE_RATIO } from '@shared/constants'
 import { useAssetLoader } from '@renderer/hooks/useAssetLoader'
 import { blobToDataUrl } from '@shared/dataUrlUtils'
 import QRCodeStyling, { type Options } from 'qr-code-styling'
@@ -15,10 +15,29 @@ function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback): JSX.Ele
   const qrRef = useRef<QRCodeStyling | null>(null)
   const centerImageDataUrl = useAssetLoader(settings.centerImagePath)
 
+  // Initialize QR code instance once
   useEffect(() => {
-    if (!containerRef.current) return
+    if (!containerRef.current || qrRef.current) return
 
-    containerRef.current.innerHTML = ''
+    const qr = new QRCodeStyling({
+      width: QR_SIZE,
+      height: QR_SIZE,
+      data: 'QQRCode'
+    })
+    qrRef.current = qr
+    qr.append(containerRef.current)
+
+    onQRReady?.(async () => {
+      if (!qrRef.current) return ''
+      const blob = await qrRef.current.getRawData('png')
+      if (!(blob instanceof Blob)) return ''
+      return blobToDataUrl(blob)
+    })
+  }, [onQRReady])
+
+  // Update QR code when data or settings change
+  useEffect(() => {
+    if (!qrRef.current) return
 
     const qrConfig: Partial<Options> = {
       width: QR_SIZE,
@@ -46,17 +65,8 @@ function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback): JSX.Ele
       }
     }
 
-    const qr = new QRCodeStyling(qrConfig)
-    qrRef.current = qr
-    qr.append(containerRef.current)
-
-    onQRReady?.(async () => {
-      if (!qrRef.current) return ''
-      const blob = await qrRef.current.getRawData('png')
-      if (!(blob instanceof Blob)) return ''
-      return blobToDataUrl(blob)
-    })
-  }, [data, settings, centerImageDataUrl, onQRReady])
+    qrRef.current.update(qrConfig)
+  }, [data, settings, centerImageDataUrl])
 
   return (
     <section

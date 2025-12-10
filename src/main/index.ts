@@ -111,9 +111,10 @@ function createWindow(): void {
   }
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   const userDataPath = app.getPath('userData')
   store = new SimpleStore()
+  await store.init()
   assetManager = new AssetManager(userDataPath)
   createWindow()
 

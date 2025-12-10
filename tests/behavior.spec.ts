@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AssetManager } from '../src/main/AssetManager'
 import { SimpleStore } from '../src/main/store'
-import type { QRCodeData } from '../src/shared/types'
+import type { QRCodeData } from '@shared/types'
 import {
-  VALID_PNG_DATA_URL,
-  VALID_JPEG_DATA_URL,
   createMockQRCodeData,
-  createMockQRSettings
+  createMockQRSettings,
+  VALID_JPEG_DATA_URL,
+  VALID_PNG_DATA_URL
 } from './fixtures'
 import * as mockFs from 'mock-fs'
 import { existsSync, readdirSync } from 'fs'
@@ -27,13 +27,14 @@ vi.mock('electron', () => ({
 let assetManager: AssetManager
 let store: SimpleStore
 
-function setupTest(): void {
+async function setupTest(): Promise<void> {
   uuidCounter = 0
   mock({
     '/mock/userdata': {}
   })
   assetManager = new AssetManager('/mock/userdata')
   store = new SimpleStore()
+  await store.init()
 }
 
 function cleanupTest(): void {
@@ -41,7 +42,7 @@ function cleanupTest(): void {
 }
 
 describe('Business Flow: QR Code Creation', () => {
-  beforeEach(setupTest)
+  beforeEach(async () => await setupTest())
   afterEach(cleanupTest)
 
   it('BHV-01: Create a simple QR code', () => {
@@ -122,7 +123,7 @@ describe('Business Flow: QR Code Creation', () => {
 })
 
 describe('Business Flow: QR Code Modification', () => {
-  beforeEach(setupTest)
+  beforeEach(async () => await setupTest())
   afterEach(cleanupTest)
 
   it('BHV-04: Update data of an existing QR code', () => {
@@ -174,7 +175,7 @@ describe('Business Flow: QR Code Modification', () => {
 })
 
 describe('Business Flow: History Management', () => {
-  beforeEach(setupTest)
+  beforeEach(async () => await setupTest())
   afterEach(cleanupTest)
 
   it('BHV-06: History limited to 3 items', () => {
@@ -266,15 +267,16 @@ describe('Business Flow: History Management', () => {
 })
 
 describe('Business Flow: Data Persistence', () => {
-  beforeEach(setupTest)
+  beforeEach(async () => await setupTest())
   afterEach(cleanupTest)
 
-  it('BHV-09: Persistence after restart', () => {
+  it('BHV-09: Persistence after restart', async () => {
     const qrPath = assetManager.saveQRCode(VALID_PNG_DATA_URL, 'uuid-1')
     const qr = createMockQRCodeData({ id: 'uuid-1', imagePath: qrPath })
     store.set('history', [qr])
 
     const newStore = new SimpleStore()
+    await newStore.init()
     const restoredHistory = newStore.get('history')
 
     expect(restoredHistory).toHaveLength(1)
@@ -282,7 +284,7 @@ describe('Business Flow: Data Persistence', () => {
     expect(restoredHistory[0].data).toBe('https://example.com')
   })
 
-  it('BHV-10: Recovery after data corruption', () => {
+  it('BHV-10: Recovery after data corruption', async () => {
     mock.restore()
     mock({
       '/mock/userdata': {
@@ -293,6 +295,7 @@ describe('Business Flow: Data Persistence', () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockReturnValue()
 
     const corruptedStore = new SimpleStore()
+    await corruptedStore.init()
     const history = corruptedStore.get('history')
 
     expect(history).toEqual([])
@@ -306,7 +309,7 @@ describe('Business Flow: Data Persistence', () => {
 })
 
 describe('Business Flow: Asset Management', () => {
-  beforeEach(setupTest)
+  beforeEach(async () => await setupTest())
   afterEach(cleanupTest)
 
   it('BHV-11: Cleanup orphan files', () => {
