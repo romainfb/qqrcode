@@ -1,6 +1,7 @@
-import { JSX, useEffect, useState } from 'react'
+import { JSX } from 'react'
 import type { QRCodeData } from '@renderer/types'
 import { HISTORY_ITEM_INDICES } from '@shared/constants'
+import { useAssetLoader } from '@renderer/hooks/useAssetLoader'
 
 interface HistoryPanelProps {
   history: QRCodeData[]
@@ -17,18 +18,7 @@ interface HistoryItemProps {
 }
 
 function HistoryItem({ item, index, isSelected, onSelect }: HistoryItemProps): JSX.Element {
-  const [imageDataUrl, setImageDataUrl] = useState<string | undefined>()
-
-  useEffect(() => {
-    if (item?.imagePath) {
-      window.api.asset
-        .load(item.imagePath)
-        .then((d) => setTimeout(() => setImageDataUrl(d), 0))
-        .catch(console.error)
-    } else {
-      setTimeout(() => setImageDataUrl(undefined), 0)
-    }
-  }, [item?.imagePath])
+  const imageDataUrl = useAssetLoader(item?.imagePath)
 
   return (
     <button

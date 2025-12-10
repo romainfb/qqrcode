@@ -1,4 +1,5 @@
-import { useId, ChangeEvent, useState, useEffect, JSX } from 'react'
+import { useId, ChangeEvent, JSX } from 'react'
+import { useAssetLoader } from '@renderer/hooks/useAssetLoader'
 
 interface ImageUploaderProps {
   value?: string
@@ -7,27 +8,7 @@ interface ImageUploaderProps {
 
 export default function ImageUploader({ value, onChange }: ImageUploaderProps): JSX.Element {
   const id = useId()
-  const [imageDataUrl, setImageDataUrl] = useState<string | undefined>()
-
-  useEffect(() => {
-    let mounted = true
-    if (value) {
-      window.api.asset
-        .load(value)
-        .then((d) => {
-          if (mounted) setImageDataUrl(d)
-        })
-        .catch(console.error)
-    } else {
-      // décaler pour éviter setState synchrones dans l'effet
-      setTimeout(() => {
-        if (mounted) setImageDataUrl(undefined)
-      }, 0)
-    }
-    return () => {
-      mounted = false
-    }
-  }, [value])
+  const imageDataUrl = useAssetLoader(value)
 
   const handleChange = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = e.target.files?.[0]

@@ -1,7 +1,8 @@
-import { JSX, useEffect, useRef, useState } from 'react'
+import { JSX, useEffect, useRef } from 'react'
 import type { CanvasProps } from '@renderer/types'
 import { QR_SIZE } from '@shared/types'
 import { CENTER_IMAGE_SIZE_RATIO, CENTER_IMAGE_MARGIN } from '@shared/constants'
+import { useAssetLoader } from '@renderer/hooks/useAssetLoader'
 import QRCodeStyling, { type Options } from 'qr-code-styling'
 
 interface CanvasPropsWithCallback extends CanvasProps {
@@ -11,19 +12,7 @@ interface CanvasPropsWithCallback extends CanvasProps {
 function Canvas({ data, settings, onQRReady }: CanvasPropsWithCallback): JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null)
   const qrRef = useRef<QRCodeStyling | null>(null)
-  const [centerImageDataUrl, setCenterImageDataUrl] = useState<string | undefined>()
-
-  useEffect(() => {
-    if (settings.centerImagePath) {
-      window.api.asset
-        .load(settings.centerImagePath)
-        .then((d) => setTimeout(() => setCenterImageDataUrl(d), 0))
-        .catch(console.error)
-    } else {
-      // Eviter setState synchrone dans l'effet
-      setTimeout(() => setCenterImageDataUrl(undefined), 0)
-    }
-  }, [settings.centerImagePath])
+  const centerImageDataUrl = useAssetLoader(settings.centerImagePath)
 
   useEffect(() => {
     if (!containerRef.current) return
