@@ -290,10 +290,18 @@ describe('Business Flow: Data Persistence', () => {
       }
     })
 
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockReturnValue()
+
     const corruptedStore = new SimpleStore()
     const history = corruptedStore.get('history')
 
     expect(history).toEqual([])
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Failed to load store.json:',
+      expect.any(SyntaxError)
+    )
+
+    consoleErrorSpy.mockRestore()
   })
 })
 
