@@ -1,12 +1,5 @@
 import { useState } from 'react'
-
-export interface Toast {
-  id: string
-  message: string
-  type: 'success' | 'error' | 'info'
-}
-
-export type ToastType = 'success' | 'error' | 'info'
+import type { Toast, ToastType } from '@shared/types'
 
 export function useToast(): {
   toasts: Toast[]

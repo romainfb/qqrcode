@@ -1,12 +1,7 @@
 import { JSX, useEffect, useState } from 'react'
+import type { Toast, ToastType } from '@shared/types'
 
-export interface Toast {
-  id: string
-  message: string
-  type: 'success' | 'error' | 'info'
-}
-
-export type ToastType = 'success' | 'error' | 'info'
+export type { Toast, ToastType }
 
 interface ToastContainerProps {
   toasts: Toast[]

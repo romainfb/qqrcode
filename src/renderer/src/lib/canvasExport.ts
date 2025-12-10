@@ -26,7 +26,7 @@ export const composeWithBackground = (
   const out = Object.assign(document.createElement('canvas'), {
     width: w,
     height: h
-  }) as HTMLCanvasElement
+  })
   const ctx = out.getContext('2d')!
   const radius = cornersStyle === 'rounded' ? Math.round(Math.min(w, h) * 0.08) : 0
 

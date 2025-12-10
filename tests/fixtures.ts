@@ -8,29 +8,18 @@ export const VALID_JPEG_DATA_URL =
 
 // Fixture: Créer un QRCodeData mock
 import type { QRCodeData, QRSettings } from '../src/shared/types'
+import { DEFAULT_QR_SETTINGS } from '../src/shared/types'
 
 export const createMockQRCodeData = (overrides?: Partial<QRCodeData>): QRCodeData => ({
   id: 'test-id-123',
   data: 'https://example.com',
   imagePath: 'qr-codes/test-id-123.png',
-  settings: {
-    ecc: 'M',
-    dotStyle: 'dots',
-    foregroundColor: '#e5e7eb',
-    backgroundColor: '#18181b',
-    cornersStyle: 'rounded',
-    centerImagePath: undefined
-  },
+  settings: { ...DEFAULT_QR_SETTINGS },
   createdAt: Date.now(),
   ...overrides
 })
 
 export const createMockQRSettings = (overrides?: Partial<QRSettings>): QRSettings => ({
-  ecc: 'M',
-  dotStyle: 'dots',
-  foregroundColor: '#e5e7eb',
-  backgroundColor: '#18181b',
-  cornersStyle: 'rounded',
-  centerImagePath: undefined,
+  ...DEFAULT_QR_SETTINGS,
   ...overrides
 })

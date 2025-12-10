@@ -18,7 +18,8 @@ export const CORNERS_STYLE_LABELS: Record<CornersStyle, string> = {
   rounded: 'Arrondi'
 }
 
-export const QR_SIZE = 400
+// Re-export QR_SIZE from constants for compatibility
+export { QR_SIZE } from './constants'
 
 // Save status
 export const SAVE_STATUSES = ['idle', 'saving', 'saved'] as const
@@ -39,10 +40,29 @@ export interface QRSettings {
   centerImagePath?: string
 }
 
+export const DEFAULT_QR_SETTINGS: QRSettings = {
+  ecc: 'M',
+  dotStyle: 'dots',
+  foregroundColor: '#e5e7eb',
+  backgroundColor: '#18181b',
+  cornersStyle: 'rounded',
+  centerImagePath: undefined
+}
+
 export interface QRCodeData {
   id: string
   data: string
   imagePath: string
   settings: QRSettings
   createdAt: number
+}
+
+// Toast types
+export const TOAST_TYPES = ['success', 'error', 'info'] as const
+export type ToastType = (typeof TOAST_TYPES)[number]
+
+export interface Toast {
+  id: string
+  message: string
+  type: ToastType
 }

@@ -45,4 +45,4 @@ class SimpleStore {
   }
 }
 
-export default SimpleStore
+export { SimpleStore }

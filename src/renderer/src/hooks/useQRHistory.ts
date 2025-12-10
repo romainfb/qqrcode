@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import type { QRCodeData, QRSettings } from '@renderer/types'
+import type { QRCodeData, QRSettings, SaveStatus } from '@renderer/types'
 
 export function useQRHistory(): {
   history: QRCodeData[]
   selectedId: string | null
-  saveStatus: 'idle' | 'saving' | 'saved'
+  saveStatus: SaveStatus
   saveNew: (data: string, settings: QRSettings, getDataUrl: () => Promise<string>) => Promise<void>
   autoSave: (
     data: string,
@@ -17,7 +17,7 @@ export function useQRHistory(): {
 } {
   const [history, setHistory] = useState<QRCodeData[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastSavedRef = useRef<string | null>(null)
 

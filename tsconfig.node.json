@@ -5,6 +5,12 @@
     "composite": true,
     "types": ["electron-vite/node", "vitest/globals"],
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": [
+        "src/shared/*"
+      ]
+    }
   }
 }

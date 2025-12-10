@@ -1,5 +1,5 @@
 import type { CornersStyle } from '@renderer/types'
-import { exportPNG, copyQrToClipboard, printQr } from '@renderer/lib/canvasExport'
+import { exportPNG, copyQrToClipboard, printQr } from '@renderer/lib/CanvasExport'
 import { JSX } from 'react'
 
 interface CanvasExportProps {

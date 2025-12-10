@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { AssetManager } from '../src/main/assetManager'
-import SimpleStore from '../src/main/store'
+import { AssetManager } from '../src/main/AssetManager'
+import { SimpleStore } from '../src/main/store'
 import type { QRCodeData } from '../src/shared/types'
 import {
   VALID_PNG_DATA_URL,

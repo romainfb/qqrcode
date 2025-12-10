@@ -1,7 +1,7 @@
 import { app, BrowserWindow, nativeImage, ipcMain } from 'electron'
 import { join } from 'path'
-import SimpleStore from './store'
-import { AssetManager } from './assetManager'
+import { SimpleStore } from './store'
+import { AssetManager } from './AssetManager'
 import { QRCodeData } from '../shared/types'
 
 let store: SimpleStore

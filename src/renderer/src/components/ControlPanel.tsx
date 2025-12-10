@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import type { QRSettings, CornersStyle, DotStyle, ECC } from '@renderer/types'
 import {
   CORNERS_STYLES,
