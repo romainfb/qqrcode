@@ -11,6 +11,7 @@ import CanvasExport from '@renderer/components/CanvasExport'
 import SelectField from '@renderer/components/SelectField'
 import ColorPicker from '@renderer/components/ColorPicker'
 import ImageUploader from '@renderer/components/ImageUploader'
+import SecureQRPanel from '@renderer/components/SecureQRPanel'
 import { useCanvasExport } from '@renderer/hooks/useCanvasExport'
 
 const ECC_LABELS: Record<ECC, string> = { L: 'L', M: 'M', Q: 'Q', H: 'H' }
@@ -74,6 +75,17 @@ export default function ControlPanel({
           onChange={(v) => onSettingChange('backgroundColor', v)}
         />
       </div>
+
+      <SecureQRPanel
+        isEnabled={settings.isSecure || false}
+        onToggle={(enabled) => onSettingChange('isSecure', enabled)}
+        password={settings.securePassword || ''}
+        onPasswordChange={(pwd) => onSettingChange('securePassword', pwd)}
+        expiration={settings.secureExpiration || '30m'}
+        onExpirationChange={(exp) => onSettingChange('secureExpiration', exp)}
+        downloads={settings.secureDownloads || 1}
+        onDownloadsChange={(n) => onSettingChange('secureDownloads', n)}
+      />
 
       <CanvasExport
         backgroundColor={settings.backgroundColor}

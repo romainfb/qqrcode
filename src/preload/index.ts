@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { QRCodeData } from '../shared/types'
+import type { SecureQROptions, SecureQRResult } from '../shared/secureQR'
 
 contextBridge.exposeInMainWorld('api', {
   history: {
@@ -16,5 +17,9 @@ contextBridge.exposeInMainWorld('api', {
     load: (path: string): Promise<string> => ipcRenderer.invoke('asset:load', path),
     delete: (path: string): Promise<void> => ipcRenderer.invoke('asset:delete', path),
     cleanup: (): Promise<void> => ipcRenderer.invoke('asset:cleanup')
+  },
+  secure: {
+    generateQR: (options: SecureQROptions): Promise<SecureQRResult> =>
+      ipcRenderer.invoke('secure:generateQR', options)
   }
 })

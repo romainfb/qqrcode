@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useToast } from './useToast'
-import { useQRHistory, useQRSettings } from './index'
+import { useQRHistory, useQRSettings, useSecureQR } from './index'
 import type { QRCodeData, QRSettings } from '@renderer/types'
 
 export function useAppController(): {
@@ -27,6 +27,7 @@ export function useAppController(): {
   const { history, selectedId, saveStatus, saveNew, autoSave, selectFromHistory, clearHistory } =
     useQRHistory()
   const { toasts, addToast, removeToast } = useToast()
+  const { generateSecureQR } = useSecureQR()
 
   const getDataUrlRef = useRef<(() => Promise<string>) | null>(null)
 
@@ -41,21 +42,62 @@ export function useAppController(): {
     const trimmed = input.trim()
     if (!trimmed) return
 
-    setQrContent(trimmed)
+    let finalContent = trimmed
+
+    // Mode sécurisé activé
+    if (settings.isSecure && settings.securePassword) {
+      // Validation du mot de passe
+      if (settings.securePassword.length < 4) {
+        addToast('Mot de passe trop court (minimum 4 caractères)', 'error')
+        return
+      }
+
+      try {
+        addToast('🔐 Chiffrement en cours...', 'info')
+
+        const result = await generateSecureQR({
+          content: trimmed,
+          password: settings.securePassword,
+          expiration: settings.secureExpiration || '30m',
+          downloads: settings.secureDownloads || 1
+        })
+
+        if (result) {
+          finalContent = result.url
+          addToast(
+            `✅ QR sécurisé généré (expire: ${result.expiration}, ${result.downloads} lecture${result.downloads > 1 ? 's' : ''})`,
+            'success'
+          )
+        } else {
+          addToast('❌ Échec de la génération sécurisée', 'error')
+          return
+        }
+      } catch (error) {
+        console.error('Secure QR generation failed:', error)
+        const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue'
+        addToast(`❌ Erreur: ${errorMessage}`, 'error')
+        return
+      }
+    }
+
+    setQrContent(finalContent)
 
     // Slight delay to ensure Canvas has rendered updated content before saving
     setTimeout(async (): Promise<void> => {
       try {
         if (getDataUrlRef.current) {
-          await saveNew(trimmed, settings, getDataUrlRef.current)
-          addToast('QR code généré !', 'success')
+          await saveNew(finalContent, settings, getDataUrlRef.current)
+          // Toast uniquement pour le mode normal
+          if (!settings.isSecure) {
+            addToast('QR code généré !', 'success')
+          }
         }
       } catch (error) {
         console.error('Failed to save QR code to history:', error)
         addToast('Erreur lors de la génération', 'error')
       }
     }, 100)
-  }, [input, saveNew, settings, addToast])
+  }, [input, saveNew, settings, addToast, generateSecureQR])
 
   const onQRReady = useCallback((getDataUrl: () => Promise<string>): void => {
     getDataUrlRef.current = getDataUrl

@@ -25,7 +25,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "start": "electron-vite preview",
-    "dev": "electron-vite dev",
+    "dev": "node -r ./crypto-polyfill.js ./node_modules/electron-vite/bin/electron-vite.js dev",
     "build": "npm run test && npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",

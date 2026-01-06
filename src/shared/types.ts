@@ -35,6 +35,11 @@ export interface QRSettings {
   backgroundColor: string
   cornersStyle: CornersStyle
   centerImagePath?: string
+  // Secure QR code options
+  isSecure?: boolean
+  securePassword?: string
+  secureExpiration?: '5m' | '30m' | '1h' | '1d'
+  secureDownloads?: number
 }
 
 export const DEFAULT_QR_SETTINGS: QRSettings = {
@@ -43,7 +48,10 @@ export const DEFAULT_QR_SETTINGS: QRSettings = {
   foregroundColor: '#e5e7eb',
   backgroundColor: '#18181b',
   cornersStyle: 'rounded',
-  centerImagePath: undefined
+  centerImagePath: undefined,
+  isSecure: false,
+  secureExpiration: '30m',
+  secureDownloads: 1
 }
 
 export interface QRCodeData {

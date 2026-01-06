@@ -6,6 +6,7 @@ import { registerHandlers } from './ipc/registerHandlers'
 import { createHistoryHandlers } from './ipc/historyHandlers'
 import { createAssetHandlers } from './ipc/assetHandlers'
 import { createMaintenanceHandlers } from './ipc/maintenanceHandlers'
+import { createSecureQRHandlers } from './ipc/secureQRHandlers'
 
 let store: SimpleStore
 let assetManager: AssetManager
@@ -66,7 +67,8 @@ app.whenReady().then(async () => {
   registerHandlers({
     ...createHistoryHandlers(store),
     ...createAssetHandlers(assetManager),
-    ...createMaintenanceHandlers(store, assetManager)
+    ...createMaintenanceHandlers(store, assetManager),
+    ...createSecureQRHandlers()
   })
 
   createWindow()

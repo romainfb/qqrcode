@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 import type { QRCodeData } from '../../shared/types'
+import type { SecureQROptions, SecureQRResult } from '../../shared/secureQR'
 
 declare global {
   interface Window {
@@ -18,6 +19,12 @@ declare global {
         delete: (path: string) => Promise<void>
         cleanup: () => Promise<void>
       }
+      secure: {
+        generateQR: (options: SecureQROptions) => Promise<SecureQRResult>
+      }
     }
   }
 }
+
+export {}
+
