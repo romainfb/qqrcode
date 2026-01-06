@@ -25,12 +25,13 @@ QRCode Generator – Open source Electron App
 - Color and size customization
 - **History management** - Save and restore up to 3 recent QR codes with their settings
 - User-friendly interface
+- **EXPERIMENTAL** - QR Code encryption with password protection (experimental feature)
 
 ---
 
 ## 🎉 Preview
 
-![QQrCode Screenshot](https://media.discordapp.net/attachments/1080432225989951508/1448252164639035433/image.png?ex=693a956f&is=693943ef&hm=ec9283ffdc9615d47a54eeecc89b231d11083d68ca109a5cf55cddc682b82b44&=&format=webp&quality=lossless&width=2522&height=1766) <!-- Replace with your screenshot if needed -->
+![QQrCode Screenshot](https://i.ibb.co/4RYmSS72/Capture-d-cran-2026-01-06-161720.png)
 
 ---
 
